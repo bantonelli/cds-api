@@ -1,5 +1,5 @@
 """
-Django settings for CDSAPI_New project.
+Django settings for CDSAPI project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -59,9 +59,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'CDSAPI_New.urls'
+ROOT_URLCONF = 'CDSAPI.urls'
 
-WSGI_APPLICATION = 'CDSAPI_New.wsgi.application'
+WSGI_APPLICATION = 'CDSAPI.wsgi.application'
 
 
 # Database
