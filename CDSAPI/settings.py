@@ -187,3 +187,14 @@ CORS_ALLOW_METHODS = (
 )
 
 AUTH_USER_MODEL = 'useraccount.User'
+
+DJOSER = {
+    'DOMAIN': '127.0.0.1:4200',
+    'SITE_NAME': 'Custom Drum Samples',
+    'PASSWORD_RESET_CONFIRM_URL': 'account/password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'account/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+}
+
+# Example Registration
+# curl -X POST http://127.0.0.1:8000/api/accounts/register --data 'username=bant7205&email=bant7205@gmail.com&password=654321'
