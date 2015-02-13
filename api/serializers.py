@@ -1,10 +1,12 @@
 __author__ = 'brandonantonelli'
 
 from rest_framework import serializers
-from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
+from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
+from userprofile.models import UserProfile
 
 
 # KIT BUILDER
@@ -69,19 +71,23 @@ class CustomKitPurchasedSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'user', 'date', 'samples', 'tags')
 
 
-# USER PROFILE
-# class UserProfileSerializer(serializers.ModelSerializer):
-#     custom_kits = CustomKitPurchasedSerializer(many=True)
-#
-#     class Meta:
-#         model = UserProfile
-#         fields = ('id', 'user', 'last_4_digits', 'created_at', 'updated_at', 'custom_kits')
-
-
-class UserSerializer(serializers.ModelSerializer):
-    #profile = UserProfileSerializer()
+#USER PROFILE
+class UserProfileDetailSerializer(serializers.ModelSerializer):
+    # Needs Object level permission
+    custom_kits = CustomKitPurchasedSerializer(many=True)
 
     class Meta:
-        model = User
-        #fields = ('id', 'username', 'first_name', 'last_name', 'email', 'profile')
-        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+        model = UserProfile
+        fields = ('id', 'last_4_digits', 'created_at', 'updated_at', 'custom_kits')
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    custom_kits = CustomKitPurchasedSerializer(many=True)
+    username = serializers.Field()
+
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'username', 'created_at', 'updated_at', 'custom_kits')
+
+
+

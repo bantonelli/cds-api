@@ -14,6 +14,13 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def username(self):
+        "Expose User's username"
+        # For use down the road we may need to access the username
+        # through a user's profile
+        return self.user.username
+
     def __unicode__(self):
         return self.user.username
 

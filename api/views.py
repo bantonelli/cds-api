@@ -7,10 +7,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 import urllib
 import urllib2
 
-from serializers import *
 from rest_framework import generics, permissions
 from permissions import IsKitOwner, IsUser
-#from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from serializers import *
+from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
+from userprofile.models import UserProfile
+
+
 ########### API VIEWS
 
 
@@ -69,13 +72,19 @@ class CustomKitDetail(generics.RetrieveDestroyAPIView):
     serializer_class = CustomKitPurchasedSerializer
 
 
-#USER
-class UserList(generics.ListAPIView):
-    permission_classes = (permissions.IsAdminUser, )
+#USER PROFILES
+class UserProfileList(generics.ListAPIView):
+    permission_classes = (permissions.AllowAny, )
     required_scopes = ['read']
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
+
+class UserProfileDetail(generics.RetrieveUpdateAPIView):
+    permission_classes = (permissions.AllowAny, )
+    required_scopes = ['read']
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileDetailSerializer
 
 
 # curl -X POST -d "client_id=21bc3b3e5b430572e41a&grant_type=password&username=brandonantonelli&password=123456" http://127.0.0.1:8000/oauth2/access_token/
