@@ -15,7 +15,7 @@ from django.contrib.auth.models import (
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, date_of_birth, password=None):
+    def create_user(self, email, username, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -25,21 +25,21 @@ class MyUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
-            date_of_birth=date_of_birth,
+            username=username,
             )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, date_of_birth, password):
+    def create_superuser(self, email, username, password):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
         user = self.create_user(email,
                                 password=password,
-                                date_of_birth=date_of_birth
+                                username=username
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -52,25 +52,25 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
         )
-    date_of_birth = models.DateField()
+    username = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['date_of_birth']
+    REQUIRED_FIELDS = ['username']
 
     def get_full_name(self):
         # The user is identified by their email address
-        return self.email
+        return self.username
 
     def get_short_name(self):
         # The user is identified by their email address
-        return self.email
+        return self.username
 
     def __str__(self):              # __unicode__ on Python 2
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -89,24 +89,6 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-
-
-
-# class User(AbstractBaseUser, PermissionsMixin):
-#     email = models.EmailField(unique=True, db_index=True)
-#     username = models.CharField(max_length=30)
-#     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-#     is_active = models.BooleanField(default=True)
-#     is_admin = models.BooleanField(default=False)
-#     is_staff = models.BooleanField(default=False)
-#
-#     objects = CustomUserManager()
-#
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['username']
-#
-#     def __unicode__(self):
-#         return self.email
 
 
 # class UserProfile(models.Model):
