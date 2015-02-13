@@ -37,8 +37,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'kitbuilder',
-    'userprofile',
+    'useraccount',
     'api',
     'provider',
     'provider.oauth2',
@@ -182,4 +184,4 @@ CORS_ALLOW_METHODS = (
     'OPTIONS'
 )
 
-AUTH_USER_MODEL = 'userprofile.User'
+AUTH_USER_MODEL = 'useraccount.User'

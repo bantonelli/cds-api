@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.conf import settings
 #Create your models here.
 
+# Custom User should only be created at the start of project
+# if you create after migrations will cause errors
 
 from django.db import models
 from django.contrib.auth.models import (
