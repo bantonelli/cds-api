@@ -193,8 +193,16 @@ DJOSER = {
     'SITE_NAME': 'Custom Drum Samples',
     'PASSWORD_RESET_CONFIRM_URL': 'account/password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'account/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_ACTIVATION_EMAIL': True,
 }
+
+# Had to change this email account's security settings for testing purposes
+# go to https://www.google.com/settings/security/lesssecureapps to change back.
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'bant7205@gmail.com'
+EMAIL_HOST_PASSWORD = 'UBM071105'
+EMAIL_PORT = 587
 
 # Example Registration
 # curl -X POST http://127.0.0.1:8000/api/accounts/register --data 'username=bant7205&email=bant7205@gmail.com&password=654321'

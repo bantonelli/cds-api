@@ -39,7 +39,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         username = args['username']
         password = args['password']
         self.object = User.objects.create_user(email=email, username=username, password=password)
-
+        return self.object
 
 
 class UserRegistrationWithAuthTokenSerializer(UserRegistrationSerializer):
