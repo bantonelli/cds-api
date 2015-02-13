@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'djoser',
     'kitbuilder',
     'useraccount',
+    'userprofile',
     'api',
     'provider',
     'provider.oauth2',
@@ -146,6 +147,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',

@@ -1,6 +1,5 @@
 from django.db import models
-#from userprofile.models import User
-from django.conf import settings
+from userprofile.models import UserProfile
 import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -118,7 +117,7 @@ class Sample(models.Model):
 
 
 class CustomKit(CommonInfo):
-    user = models.ForeignKey(User, related_name='custom_kits')
+    user = models.ForeignKey(UserProfile, related_name='custom_kits')
     date = models.DateField(auto_now_add=True)
     samples = models.ManyToManyField(Sample)
     tags = models.ManyToManyField(Tag)

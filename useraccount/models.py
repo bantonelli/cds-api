@@ -2,7 +2,6 @@ from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
 from django.core import validators
 from django.utils import timezone
-from django.conf import settings
 #Create your models here.
 
 # Custom User should only be created at the start of project
@@ -87,37 +86,3 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
-
-
-
-
-# class UserProfile(models.Model):
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name="profile")
-#     last_4_digits = models.CharField(max_length=4, blank=True)
-#     stripe_id = models.CharField(max_length=255, blank=True)
-#     subscribed = models.BooleanField(default=False)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-# settings.AUTH_USER_MODEL.get_or_create_profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
-#
-# """
-# We are defining a new property for the User model.
-#     The new property is called profile.
-#     Whenever you pass in a User object to this property it will get or create a UserProfile for this user.
-#     When we access the User object's profile property this code will get triggered and create a UserProfile that
-#     is linked to the User object.
-# """
-#
-# # Access a User's profile by doing --> user_instance.profile
-# # Any changes made to it have to be saved
-# # use this to save--> user_instance.profile.save() method
-#
-# from django.db.models.signals import post_save
-# from django.dispatch.dispatcher import receiver
-#
-#
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def user_save(sender, instance, **kwargs):
-#     instance.get_or_create_profile
-

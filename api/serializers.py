@@ -3,7 +3,8 @@ __author__ = 'brandonantonelli'
 from rest_framework import serializers
 from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from django.conf import settings
-User = settings.AUTH_USER_MODEL
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 # KIT BUILDER

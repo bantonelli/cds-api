@@ -1,10 +1,4 @@
 __author__ = 'brandonantonelli'
-
-from django.contrib import admin
-#from django.contrib.auth.admin import UserAdmin
-#from django.contrib.auth.models import User
-
-#from models import UserProfile, User
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
@@ -12,6 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from models import User
+from userprofile.admin import UserProfileInline
 
 
 class UserCreationForm(forms.ModelForm):
@@ -70,8 +65,9 @@ class UserAdmin(UserAdmin):
     list_display = ('email', 'username', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('username',)}),
+        ('Account Info', {'fields': ('email', 'username', 'password')}),
+        #(None, {'fields': ('email', 'password')}),
+        #('Personal info', {'fields': ('username',)}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -85,6 +81,8 @@ class UserAdmin(UserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+    inlines = (UserProfileInline, )
+
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)
