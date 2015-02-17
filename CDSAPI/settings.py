@@ -37,7 +37,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
     'djoser',
     'kitbuilder',
     'useraccount',
@@ -147,7 +146,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
@@ -164,7 +162,7 @@ REST_FRAMEWORK = {
 
 # NOTE: HAVE TO CHANGE line 491 of provider/views.py in site-packages to use content_type instead of mime_type for this
 # to work in Django 1.7 and later.
-# curl -X POST -d 'client_id=ec3eee53854a32223d1a&client_secret=835a78dccec0ed293ff599f52da45bfa5667beca&grant_type=password&username=bantonelli07@gmail.com&password=123456' 'http://127.0.0.1:8000/oauth2/access_token'
+# curl -X POST -d 'client_id=0f4d3a53f1db12be80cd&client_secret=d5fdf1e1a0fdc057844dfebe5f795cfe7d2d187e&grant_type=password&username=bantonelli07@gmail.com&password=123456' 'http://127.0.0.1:8000/oauth2/access_token'
 
 
 

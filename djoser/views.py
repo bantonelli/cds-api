@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status, response
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from provider.oauth2.models import AccessToken
 from django.contrib.auth.tokens import default_token_generator
 from . import serializers, settings, utils
 
@@ -169,5 +170,14 @@ class UserView(generics.RetrieveUpdateAPIView):
     )
 
     def get_object(self, *args, **kwargs):
-        return self.request.user
+        if self.request.user:
+            return self.request.user
+        else:
+            auth_header = self.request.META['Authorization']
+            index = auth_header.find('Bearer') + 7
+            token_string = auth_header[index:]
+            token = AccessToken.objects.get_token(token=token_string)
+            user = token.user
+            return user
 
+# curl -H "Authorization: Bearer 07a5d961e3364d2292da03b0c52156c3969548ed" http://localhost:8000/api/accounts/me
