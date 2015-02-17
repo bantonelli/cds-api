@@ -180,4 +180,10 @@ class UserView(generics.RetrieveUpdateAPIView):
             user = token.user
             return user
 
+# bantonelli07@gmail.com
 # curl -H "Authorization: Bearer 07a5d961e3364d2292da03b0c52156c3969548ed" http://localhost:8000/api/accounts/me
+# maddenmoment@gmail.com
+# curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde8" http://localhost:8000/api/accounts/me
+
+
+# curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde9" http://localhost:8000/api/accounts/me

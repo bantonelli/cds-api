@@ -72,7 +72,7 @@ class CustomKitPurchasedSerializer(serializers.ModelSerializer):
 
 
 #USER PROFILE
-class UserProfileDetailSerializer(serializers.ModelSerializer):
+class UserProfilePrivateSerializer(serializers.ModelSerializer):
     # Needs Object level permission
     custom_kits = CustomKitPurchasedSerializer(many=True)
 
@@ -81,7 +81,7 @@ class UserProfileDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'last_4_digits', 'created_at', 'updated_at', 'custom_kits')
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfilePublicSerializer(serializers.ModelSerializer):
     custom_kits = CustomKitPurchasedSerializer(many=True)
     username = serializers.Field()
 

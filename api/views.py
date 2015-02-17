@@ -1,15 +1,7 @@
-from django.shortcuts import render_to_response
-from django.views.generic.base import View
-from django.core.context_processors import csrf
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.utils.decorators import method_decorator
-from django.http import HttpResponseRedirect, HttpResponse
-import urllib
-import urllib2
-
 from rest_framework import generics, permissions
 from permissions import IsKitOwner, IsUser
 from serializers import *
+from provider.oauth2.models import AccessToken
 from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
 
@@ -73,18 +65,31 @@ class CustomKitDetail(generics.RetrieveDestroyAPIView):
 
 
 #USER PROFILES
-class UserProfileList(generics.ListAPIView):
+class PublicUserProfileList(generics.ListAPIView):
     permission_classes = (permissions.AllowAny, )
     required_scopes = ['read']
     queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfilePublicSerializer
 
+
+class PublicUserProfileDetail(generics.RetrieveAPIView):
+    permission_classes = (permissions.AllowAny,)
+    required_scopes = ['read']
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfilePublicSerializer
 
 class UserProfileDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.IsAuthenticated, IsUser,)
     required_scopes = ['read']
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileDetailSerializer
+    serializer_class = UserProfilePrivateSerializer
 
-
-# curl -X POST -d "client_id=21bc3b3e5b430572e41a&grant_type=password&username=brandonantonelli&password=123456" http://127.0.0.1:8000/oauth2/access_token/
+    def get_object(self, *args, **kwargs):
+        if self.request.user:
+            return self.request.user.profile
+        elif self.request.META['Authorization']:
+            auth_header = self.request.META['Authorization']
+            index = auth_header.find('Bearer') + 7
+            token_string = auth_header[index:]
+            token = AccessToken.objects.get_token(token=token_string)
+            user = token.user
+            return user.profile
