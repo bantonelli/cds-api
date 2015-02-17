@@ -172,7 +172,7 @@ class UserView(generics.RetrieveUpdateAPIView):
     def get_object(self, *args, **kwargs):
         if self.request.user:
             return self.request.user
-        else:
+        elif self.request.META['Authorization']:
             auth_header = self.request.META['Authorization']
             index = auth_header.find('Bearer') + 7
             token_string = auth_header[index:]
