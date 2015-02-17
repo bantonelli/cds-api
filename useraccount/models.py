@@ -52,7 +52,7 @@ class User(AbstractBaseUser):
         unique=True,
         )
     username = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     objects = MyUserManager()
