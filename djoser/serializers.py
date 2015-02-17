@@ -12,9 +12,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (
             User.USERNAME_FIELD,
+            'id',
         )
         read_only_fields = (
             User.USERNAME_FIELD,
+            'id',
         )
 
 
