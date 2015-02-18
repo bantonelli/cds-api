@@ -8,6 +8,18 @@ from . import serializers, settings, utils
 
 User = get_user_model()
 
+class OauthUserMixin():
+
+    def get_user(self, request):
+        if request.user:
+            return request.user
+        elif request.META['Authorization']:
+            auth_header = request.META['Authorization']
+            index = auth_header.find('Bearer') + 7
+            token_string = auth_header[index:]
+            token = AccessToken.objects.get_token(token=token_string)
+            user = token.user
+            return user
 
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
     permission_classes = (
@@ -162,7 +174,7 @@ class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView):
         return response.Response(status=status.HTTP_200_OK)
 
 
-class UserView(generics.RetrieveUpdateAPIView):
+class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
     model = User
     serializer_class = serializers.UserSerializer
     permission_classes = (
@@ -170,15 +182,7 @@ class UserView(generics.RetrieveUpdateAPIView):
     )
 
     def get_object(self, *args, **kwargs):
-        if self.request.user:
-            return self.request.user
-        elif self.request.META['Authorization']:
-            auth_header = self.request.META['Authorization']
-            index = auth_header.find('Bearer') + 7
-            token_string = auth_header[index:]
-            token = AccessToken.objects.get_token(token=token_string)
-            user = token.user
-            return user
+        return self.get_user(self.request)
 
 # bantonelli07@gmail.com
 # curl -H "Authorization: Bearer 07a5d961e3364d2292da03b0c52156c3969548ed" http://localhost:8000/api/accounts/me

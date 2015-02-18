@@ -5,6 +5,8 @@ from provider.oauth2.models import AccessToken
 from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
 
+User = get_user_model()
+
 
 ########### API VIEWS
 
@@ -79,17 +81,22 @@ class PublicUserProfileDetail(generics.RetrieveAPIView):
     serializer_class = UserProfilePublicSerializer
 
 class UserProfileDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated, IsUser,)
+    permission_classes = (permissions.IsAuthenticated, )
     required_scopes = ['read']
-    serializer_class = UserProfilePrivateSerializer
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfilePublicSerializer
 
-    def get_object(self, *args, **kwargs):
-        if self.request.user:
-            return self.request.user.profile
-        elif self.request.META['Authorization']:
-            auth_header = self.request.META['Authorization']
-            index = auth_header.find('Bearer') + 7
-            token_string = auth_header[index:]
-            token = AccessToken.objects.get_token(token=token_string)
-            user = token.user
-            return user.profile
+    def get_serializer_class(self, *args, **kwargs):
+        current_user = self.request.user
+        # if self.request.META['Authorization']:
+        #     auth_header = self.request.META['Authorization']
+        #     index = auth_header.find('Bearer') + 7
+        #     token_string = auth_header[index:]
+        #     token = AccessToken.objects.get_token(token=token_string)
+        #     current_user = token.user
+        user_id = self.kwargs.get(self.lookup_field)
+        lookup_user = User.objects.get(pk=user_id)
+        if lookup_user == current_user:
+            return UserProfilePrivateSerializer
+        else:
+            return UserProfilePublicSerializer
