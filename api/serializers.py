@@ -82,7 +82,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):
-    custom_kits = CustomKitPurchasedSerializer(many=True)
+    custom_kits = CustomKitPurchasedSerializer(many=True, read_only=True)
     username = serializers.Field()
 
     class Meta:

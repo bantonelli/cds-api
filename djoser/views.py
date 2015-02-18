@@ -8,9 +8,10 @@ from . import serializers, settings, utils
 
 User = get_user_model()
 
+
 class OauthUserMixin():
 
-    def get_user(self, request):
+    def get_current_user(self, request):
         if request.user:
             return request.user
         elif request.META['Authorization']:
@@ -21,7 +22,7 @@ class OauthUserMixin():
             user = token.user
             return user
 
-class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
+class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUserMixin):
     permission_classes = (
         permissions.AllowAny,
     )
@@ -49,30 +50,29 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView):
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
 
-
-class LoginView(utils.ActionViewMixin, generics.GenericAPIView):
-    serializer_class = serializers.UserLoginSerializer
-    permission_classes = (
-        permissions.AllowAny,
-    )
-
-    def action(self, serializer):
-        token, _ = Token.objects.get_or_create(user=serializer.object)
-        return Response(
-            data=serializers.TokenSerializer(token).data,
-            status=status.HTTP_200_OK,
-        )
-
-
-class LogoutView(generics.GenericAPIView):
-    permission_classes = (
-        permissions.IsAuthenticated,
-    )
-
-    def post(self, request):
-        Token.objects.filter(user=request.user).delete()
-
-        return response.Response(status=status.HTTP_200_OK)
+# class LoginView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
+#     serializer_class = serializers.UserLoginSerializer
+#     permission_classes = (
+#         permissions.AllowAny,
+#     )
+#
+#     def action(self, serializer):
+#         token, _ = Token.objects.get_or_create(user=serializer.object)
+#         return Response(
+#             data=serializers.TokenSerializer(token).data,
+#             status=status.HTTP_200_OK,
+#         )
+#
+#
+# class LogoutView(generics.GenericAPIView, OauthUserMixin):
+#     permission_classes = (
+#         permissions.IsAuthenticated,
+#     )
+#
+#     def post(self, request):
+#         Token.objects.filter(user=request.user).delete()
+#
+#         return response.Response(status=status.HTTP_200_OK)
 
 
 class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generics.GenericAPIView):
@@ -106,7 +106,7 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
         return context
 
 
-class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView):
+class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -117,8 +117,9 @@ class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView):
         return serializers.SetPasswordSerializer
 
     def action(self, serializer):
-        self.request.user.set_password(serializer.data['new_password'])
-        self.request.user.save()
+        user = self.get_current_user(self.request)
+        user.set_password(serializer.data['new_password'])
+        user.save()
         return response.Response(status=status.HTTP_200_OK)
 
 
@@ -157,7 +158,7 @@ class ActivationView(utils.ActionViewMixin, generics.GenericAPIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView):
+class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
     serializer_class = serializers.SetUsernameSerializer
     permission_classes = (
         permissions.IsAuthenticated,
@@ -169,8 +170,9 @@ class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView):
         return serializers.SetUsernameSerializer
 
     def action(self, serializer):
-        setattr(self.request.user, User.USERNAME_FIELD, serializer.data['new_' + User.USERNAME_FIELD])
-        self.request.user.save()
+        user = self.get_current_user(self.request)
+        setattr(user, User.USERNAME_FIELD, serializer.data['new_' + User.USERNAME_FIELD])
+        user.save()
         return response.Response(status=status.HTTP_200_OK)
 
 
@@ -182,7 +184,7 @@ class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
     )
 
     def get_object(self, *args, **kwargs):
-        return self.get_user(self.request)
+        return self.get_current_user(self.request)
 
 # bantonelli07@gmail.com
 # curl -H "Authorization: Bearer 07a5d961e3364d2292da03b0c52156c3969548ed" http://localhost:8000/api/accounts/me
