@@ -78,7 +78,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'last_4_digits', 'created_at', 'updated_at', 'custom_kits')
+        fields = ('id', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'custom_kits')
 
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):

@@ -80,6 +80,7 @@ class PublicUserProfileDetail(generics.RetrieveAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfilePublicSerializer
 
+
 class UserProfileDetail(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     required_scopes = ['read']
@@ -100,3 +101,83 @@ class UserProfileDetail(generics.RetrieveUpdateAPIView):
             return UserProfilePrivateSerializer
         else:
             return UserProfilePublicSerializer
+
+
+import json
+import stripe
+from django.http import HttpResponse
+from django.views.generic import View
+
+
+
+class CustomKitPaymentView(View):
+
+    def get(self, request):
+        # <view logic>
+        return HttpResponse('result')
+
+# Post request does the following:
+    # 1) Get details about the kit.
+    # 2) Calculate price of kit
+    # 3) Create stripe charge
+    # 4) Handle and respond with Stripe error message
+    # 5) If Successful
+        # 1) Build the Kit
+        # 2) Save the Kit
+        # 3) Email the user
+    def post(self, request):
+
+        stripe.api_key = settings.STRIPE_SECRET
+        # Get the credit card details submitted by the form
+        token = request.POST['stripeToken']
+
+        # Create the charge on Stripe's servers - this will charge the user's card
+        try:
+            charge = stripe.Charge.create(
+            amount=1000, # amount in cents, again
+            currency="usd",
+            card=token,
+            description="payinguser@example.com"
+        )
+        except stripe.error.CardError, e:
+        # Since it's a decline, stripe.error.CardError will be caught
+            body = e.json_body
+            err  = body['error']
+
+            print "Status is: %s" % e.http_status
+            print "Type is: %s" % err['type']
+            print "Code is: %s" % err['code']
+        # param is '' in this case
+            print "Param is: %s" % err['param']
+            print "Message is: %s" % err['message']
+        except stripe.error.InvalidRequestError, e:
+        # Invalid parameters were supplied to Stripe's API
+            pass
+        except stripe.error.AuthenticationError, e:
+        # Authentication with Stripe's API failed
+        # (maybe you changed API keys recently)
+            pass
+        except stripe.error.APIConnectionError, e:
+        # Network communication with Stripe failed
+            pass
+        except stripe.error.StripeError, e:
+        # Display a very generic error to the user, and maybe send
+        # yourself an email
+            pass
+        except Exception, e:
+        # Something else happened, completely unrelated to Stripe
+            pass
+
+        success = False
+        if err:
+            success = False
+            err = err
+        else:
+            success = True
+            # build kit, email kit to user.
+        result = []
+        result.append({"success": success})
+        result.append({"error": err})
+        resp = HttpResponse(content_type="application/json")
+        json.dump(result, resp)
+        return resp

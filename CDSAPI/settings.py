@@ -204,3 +204,7 @@ EMAIL_PORT = 587
 
 # Example Registration
 # curl -X POST http://127.0.0.1:8000/api/accounts/register --data 'username=bant7205&email=bant7205@gmail.com&password=654321'
+
+# Stripe Settings for Pro Essentials --> Change when ready.
+STRIPE_PUBLISHABLE = 'pk_test_hyDepohZLg2M8UX2pYG6nhRI'
+STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
