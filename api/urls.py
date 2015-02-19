@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.urlpatterns import format_suffix_patterns
 import views
 
@@ -19,6 +20,7 @@ urlpatterns = patterns('',
                         # url(r'^api/samples/endproducts/(?P<pk>[0-9]+)/$', views.SampleDetail.as_view()),
                         url(r'^api/custom-kits/$', views.CustomKitList.as_view()),
                         url(r'^api/custom-kits/(?P<pk>[0-9]+)/$', views.CustomKitDetail.as_view()), # Only User accessible
+                        url(r'^api/custom-kits/purchase/$', csrf_exempt(views.CustomKitPaymentView.as_view())),
                        )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

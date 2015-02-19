@@ -107,14 +107,21 @@ import json
 import stripe
 from django.http import HttpResponse
 from django.views.generic import View
-
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.core.context_processors import csrf
 
 
 class CustomKitPaymentView(View):
 
     def get(self, request):
         # <view logic>
-        return HttpResponse('result')
+        result = []
+        result.append({'csrf_token': unicode(csrf(request)['csrf_token'])})
+        resp = HttpResponse(content_type="application/json")
+        json.dump(result, resp)
+        return resp
 
 # Post request does the following:
     # 1) Get details about the kit.
@@ -131,25 +138,27 @@ class CustomKitPaymentView(View):
         # Get the credit card details submitted by the form
         token = request.POST['stripeToken']
 
+        err = "no errors"
+
         # Create the charge on Stripe's servers - this will charge the user's card
         try:
             charge = stripe.Charge.create(
             amount=1000, # amount in cents, again
             currency="usd",
             card=token,
-            description="payinguser@example.com"
+            description="test@user.com"
         )
         except stripe.error.CardError, e:
         # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
-            err  = body['error']
-
+            err = body['error']
             print "Status is: %s" % e.http_status
             print "Type is: %s" % err['type']
             print "Code is: %s" % err['code']
         # param is '' in this case
-            print "Param is: %s" % err['param']
+        #     print "Param is: %s" % err['param']
             print "Message is: %s" % err['message']
+            err = err['message']
         except stripe.error.InvalidRequestError, e:
         # Invalid parameters were supplied to Stripe's API
             pass
@@ -168,10 +177,9 @@ class CustomKitPaymentView(View):
         # Something else happened, completely unrelated to Stripe
             pass
 
-        success = False
-        if err:
+        success = True
+        if err != "no errors":
             success = False
-            err = err
         else:
             success = True
             # build kit, email kit to user.

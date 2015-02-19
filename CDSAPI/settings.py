@@ -208,3 +208,5 @@ EMAIL_PORT = 587
 # Stripe Settings for Pro Essentials --> Change when ready.
 STRIPE_PUBLISHABLE = 'pk_test_hyDepohZLg2M8UX2pYG6nhRI'
 STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
+
+#CSRF_COOKIE_NAME = 'mycsrftoken'
