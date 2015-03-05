@@ -7,7 +7,7 @@ from userprofile.models import UserProfile
 
 User = get_user_model()
 
-
+import ast
 ########### API VIEWS
 
 
@@ -137,6 +137,8 @@ class CustomKitPaymentView(View):
         stripe.api_key = settings.STRIPE_SECRET
         # Get the credit card details submitted by the form
         token = request.POST['stripeToken']
+        user_id = request.POST['userID']
+        user = User.objects.get(pk=user_id)
 
         err = "no errors"
 
@@ -146,7 +148,7 @@ class CustomKitPaymentView(View):
             amount=1000, # amount in cents, again
             currency="usd",
             card=token,
-            description="test@user.com"
+            description=user.email
         )
         except stripe.error.CardError, e:
         # Since it's a decline, stripe.error.CardError will be caught
@@ -182,10 +184,14 @@ class CustomKitPaymentView(View):
             success = False
         else:
             success = True
+            kit_name = request.POST['kitName']
+            samples = request.POST['samples']
+            samples = ast.literal_eval(samples)
             # build kit, email kit to user.
         result = []
         result.append({"success": success})
         result.append({"error": err})
+        result.append({"samples": samples[0]})
         resp = HttpResponse(content_type="application/json")
         json.dump(result, resp)
         return resp
