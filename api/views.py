@@ -139,7 +139,7 @@ class CustomKitPaymentView(View):
         return resp
 
     def post(self, request):
-        payment_success = True
+        payment_success = None
         payment_error = "no errors"
         zip_created = None
         mail_sent = None
@@ -219,7 +219,7 @@ class CustomKitPaymentView(View):
 
                 # Must close zip for all contents to be written
                 zf.close()
-                #zip_created = True
+                zip_created = True
                 try:
                     # Create Custom Kit object, associate with User Profile and Zip file
                     user_profile = UserProfile.objects.get(pk=user_id)
@@ -235,7 +235,7 @@ class CustomKitPaymentView(View):
                     mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
                     mail.attach_file(zip_filename)
                     mail.send()
-                    #mail_sent = True
+                    mail_sent = True
                 except:
                     mail_sent = False
                     return "Attachment error"
@@ -248,7 +248,7 @@ class CustomKitPaymentView(View):
         result.append({"payment_error": payment_error})
         result.append({"zip_created": zip_created})
         result.append({"mail_sent": mail_sent})
-        result.append({"samples": samples[0]})
+        #result.append({"samples": samples[0]})
         resp = HttpResponse(content_type="application/json")
         json.dump(result, resp)
         return resp
