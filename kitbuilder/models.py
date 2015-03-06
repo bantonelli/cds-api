@@ -116,12 +116,16 @@ class Sample(models.Model):
 # Classes and Functions for Custom Kit Model
 
 
-class CustomKit(CommonInfo):
+class CustomKit(models.Model):
+    name = models.CharField(max_length=100)
     user = models.ForeignKey(UserProfile, related_name='custom_kits')
     date = models.DateField(auto_now_add=True)
-    samples = models.ManyToManyField(Sample)
-    tags = models.ManyToManyField(Tag)
+    samples = models.ManyToManyField(Sample, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, blank=True, null=True)
     zip_file = models.FilePathField(blank=True, null=True, max_length=200)
+
+    def __unicode__(self):
+        return self.name
 
 
 ######## SIGNALS (for model deletion etc.)

@@ -193,7 +193,7 @@ class CustomKitPaymentView(View):
         samples = request.POST['samples']
         samples = ast.literal_eval(samples)
         # build kit zip file --> DONE
-        # create custom kit object,
+        # create custom kit object and associate with User --> DONE
         # email kit to user --> DONE
         try:
             sample_objects = []
@@ -202,6 +202,7 @@ class CustomKitPaymentView(View):
 
             zip_subdir = kit_name
             zip_filename = os.path.join(settings.MEDIA_ROOT, "custom_kits", "%s.zip" % zip_subdir)
+            zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "%s.zip" % zip_subdir)
             # The zip compressor
             zf = zipfile.ZipFile(zip_filename, mode='w')
 
@@ -217,6 +218,16 @@ class CustomKitPaymentView(View):
             # Must close zip for all contents to be written
             zf.close()
             #zip_created = True
+            try:
+                # Create Custom Kit object, associate with User Profile and Zip file
+                user_profile = UserProfile.objects.get(pk=user_id)
+                custom_kit = CustomKit(name=kit_name, user=user_profile, zip_file=zip_media_path)
+                custom_kit.save()
+                # Associate samples with custom kit object
+                custom_kit.samples = sample_objects
+                custom_kit.save()
+            except:
+                return "Custom Kit Creation Error"
             try:
                 email = user.email
                 mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
