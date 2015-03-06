@@ -119,6 +119,15 @@ from django.utils.decorators import method_decorator
 from django.core.context_processors import csrf
 
 
+# Post request does the following:
+    # 1) Get details about the kit.
+    # 2) Calculate price of kit
+    # 3) Create stripe charge
+    # 4) Handle and respond with Stripe error message
+    # 5) If Successful
+        # 1) Build the Kit
+        # 2) Save the Kit
+        # 3) Email the user
 class CustomKitPaymentView(View):
 
     def get(self, request):
@@ -129,117 +138,110 @@ class CustomKitPaymentView(View):
         json.dump(result, resp)
         return resp
 
-# Post request does the following:
-    # 1) Get details about the kit.
-    # 2) Calculate price of kit
-    # 3) Create stripe charge
-    # 4) Handle and respond with Stripe error message
-    # 5) If Successful
-        # 1) Build the Kit
-        # 2) Save the Kit
-        # 3) Email the user
     def post(self, request):
         payment_success = True
         payment_error = "no errors"
-        zip_created = True
-        mail_sent = True
-        stripe.api_key = settings.STRIPE_SECRET
+        zip_created = None
+        mail_sent = None
+
         # Get the credit card details submitted by the form
-        # token = request.POST['stripeToken']
+        token = request.POST['stripeToken']
         user_id = request.POST['userID']
-        user = User.objects.get(pk=user_id)
-        # # Create the charge on Stripe's servers - this will charge the user's card
-        # try:
-        #     charge = stripe.Charge.create(
-        #     amount=1000, # amount in cents, again
-        #     currency="usd",
-        #     card=token,
-        #     description=user.email
-        # )
-        # except stripe.error.CardError, e:
-        # # Since it's a decline, stripe.error.CardError will be caught
-        #     body = e.json_body
-        #     err = body['error']
-        #     print "Status is: %s" % e.http_status
-        #     print "Type is: %s" % err['type']
-        #     print "Code is: %s" % err['code']
-        # # param is '' in this case
-        # #     print "Param is: %s" % err['param']
-        #     print "Message is: %s" % err['message']
-        #     err = err['message']
-        # except stripe.error.InvalidRequestError, e:
-        # # Invalid parameters were supplied to Stripe's API
-        #     pass
-        # except stripe.error.AuthenticationError, e:
-        # # Authentication with Stripe's API failed
-        # # (maybe you changed API keys recently)
-        #     pass
-        # except stripe.error.APIConnectionError, e:
-        # # Network communication with Stripe failed
-        #     pass
-        # except stripe.error.StripeError, e:
-        # # Display a very generic error to the user, and maybe send
-        # # yourself an email
-        #     pass
-        # except Exception, e:
-        # # Something else happened, completely unrelated to Stripe
-        #     pass
-        #
-        # success = True
-        # if err != "no errors":
-        #     payment_success = False
-        # else:
         kit_name = request.POST['kitName']
         samples = request.POST['samples']
         samples = ast.literal_eval(samples)
+
+        stripe.api_key = settings.STRIPE_SECRET
+        user = User.objects.get(pk=user_id)
+        charge_amount = int((len(samples) * 100) * 0.75)
+        # Create the charge on Stripe's servers - this will charge the user's card
+        try:
+            charge = stripe.Charge.create(
+            amount=charge_amount, # amount in cents, again
+            currency="usd",
+            card=token,
+            description=user.email
+        )
+        except stripe.error.CardError, e:
+        # Since it's a decline, stripe.error.CardError will be caught
+            body = e.json_body
+            err = body['error']
+            print "Status is: %s" % e.http_status
+            print "Type is: %s" % err['type']
+            print "Code is: %s" % err['code']
+        # param is '' in this case
+        #     print "Param is: %s" % err['param']
+            print "Message is: %s" % err['message']
+            payment_error = err['message']
+        except stripe.error.InvalidRequestError, e:
+        # Invalid parameters were supplied to Stripe's API
+            pass
+        except stripe.error.AuthenticationError, e:
+        # Authentication with Stripe's API failed
+        # (maybe you changed API keys recently)
+            pass
+        except stripe.error.APIConnectionError, e:
+        # Network communication with Stripe failed
+            pass
+        except stripe.error.StripeError, e:
+        # Display a very generic error to the user, and maybe send
+        # yourself an email
+            pass
+        except Exception, e:
+        # Something else happened, completely unrelated to Stripe
+            pass
+
+        if payment_error != "no errors":
+            payment_success = False
+        else:
         # build kit zip file --> DONE
         # create custom kit object and associate with User --> DONE
         # email kit to user --> DONE
-        try:
-            sample_objects = []
-            for sample in samples:
-                sample_objects.append(Sample.objects.get(pk=sample))
-
-            zip_subdir = kit_name
-            zip_filename = os.path.join(settings.MEDIA_ROOT, "custom_kits", "%s.zip" % zip_subdir)
-            zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "%s.zip" % zip_subdir)
-            # The zip compressor
-            zf = zipfile.ZipFile(zip_filename, mode='w')
-
-            for sample in sample_objects:
-                # Calculate path for file in zip
-                fpath = sample.wav.url[1:]
-                fpath = os.path.join(settings.BASE_DIR, fpath)
-                fname = os.path.basename(fpath)
-                zip_path = os.path.join(zip_subdir, sample.type, fname)
-                # Add file, at correct path
-                zf.write(fpath, zip_path)
-
-            # Must close zip for all contents to be written
-            zf.close()
-            #zip_created = True
             try:
-                # Create Custom Kit object, associate with User Profile and Zip file
-                user_profile = UserProfile.objects.get(pk=user_id)
-                custom_kit = CustomKit(name=kit_name, user=user_profile, zip_file=zip_media_path)
-                custom_kit.save()
-                # Associate samples with custom kit object
-                custom_kit.samples = sample_objects
-                custom_kit.save()
+                sample_objects = []
+                for sample in samples:
+                    sample_objects.append(Sample.objects.get(pk=sample))
+
+                zip_subdir = kit_name
+                zip_filename = os.path.join(settings.MEDIA_ROOT, "custom_kits", "%s.zip" % zip_subdir)
+                zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "%s.zip" % zip_subdir)
+                # The zip compressor
+                zf = zipfile.ZipFile(zip_filename, mode='w')
+
+                for sample in sample_objects:
+                    # Calculate path for file in zip
+                    fpath = sample.wav.url[1:]
+                    fpath = os.path.join(settings.BASE_DIR, fpath)
+                    fname = os.path.basename(fpath)
+                    zip_path = os.path.join(zip_subdir, sample.type, fname)
+                    # Add file, at correct path
+                    zf.write(fpath, zip_path)
+
+                # Must close zip for all contents to be written
+                zf.close()
+                #zip_created = True
+                try:
+                    # Create Custom Kit object, associate with User Profile and Zip file
+                    user_profile = UserProfile.objects.get(pk=user_id)
+                    custom_kit = CustomKit(name=kit_name, user=user_profile, zip_file=zip_media_path)
+                    custom_kit.save()
+                    # Associate samples with custom kit object
+                    custom_kit.samples = sample_objects
+                    custom_kit.save()
+                except:
+                    return "Custom Kit Creation Error"
+                try:
+                    email = user.email
+                    mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
+                    mail.attach_file(zip_filename)
+                    mail.send()
+                    #mail_sent = True
+                except:
+                    mail_sent = False
+                    return "Attachment error"
             except:
-                return "Custom Kit Creation Error"
-            try:
-                email = user.email
-                mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
-                mail.attach_file(zip_filename)
-                mail.send()
-                #mail_sent = True
-            except:
-                mail_sent = False
-                return "Attachment error"
-        except:
-            zip_created = False
-            return "Zip File Error"
+                zip_created = False
+                return "Zip File Error"
 
         result = []
         result.append({"payment_success": payment_success})
