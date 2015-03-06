@@ -121,6 +121,7 @@ class CustomKit(CommonInfo):
     date = models.DateField(auto_now_add=True)
     samples = models.ManyToManyField(Sample)
     tags = models.ManyToManyField(Tag)
+    zip_file = models.FilePathField(blank=True, null=True, max_length=200)
 
 
 ######## SIGNALS (for model deletion etc.)

@@ -1,13 +1,19 @@
+import os
+import zipfile
+import StringIO
+import ast
 from rest_framework import generics, permissions
 from permissions import IsKitOwner, IsUser
 from serializers import *
 from provider.oauth2.models import AccessToken
 from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
+from django.conf import settings
+from django.core.mail import send_mail, EmailMessage
 
 User = get_user_model()
 
-import ast
+
 ########### API VIEWS
 
 
@@ -133,64 +139,102 @@ class CustomKitPaymentView(View):
         # 2) Save the Kit
         # 3) Email the user
     def post(self, request):
-
+        payment_success = True
+        payment_error = "no errors"
+        zip_created = True
+        mail_sent = True
         stripe.api_key = settings.STRIPE_SECRET
         # Get the credit card details submitted by the form
-        token = request.POST['stripeToken']
+        # token = request.POST['stripeToken']
         user_id = request.POST['userID']
         user = User.objects.get(pk=user_id)
-
-        err = "no errors"
-
-        # Create the charge on Stripe's servers - this will charge the user's card
+        # # Create the charge on Stripe's servers - this will charge the user's card
+        # try:
+        #     charge = stripe.Charge.create(
+        #     amount=1000, # amount in cents, again
+        #     currency="usd",
+        #     card=token,
+        #     description=user.email
+        # )
+        # except stripe.error.CardError, e:
+        # # Since it's a decline, stripe.error.CardError will be caught
+        #     body = e.json_body
+        #     err = body['error']
+        #     print "Status is: %s" % e.http_status
+        #     print "Type is: %s" % err['type']
+        #     print "Code is: %s" % err['code']
+        # # param is '' in this case
+        # #     print "Param is: %s" % err['param']
+        #     print "Message is: %s" % err['message']
+        #     err = err['message']
+        # except stripe.error.InvalidRequestError, e:
+        # # Invalid parameters were supplied to Stripe's API
+        #     pass
+        # except stripe.error.AuthenticationError, e:
+        # # Authentication with Stripe's API failed
+        # # (maybe you changed API keys recently)
+        #     pass
+        # except stripe.error.APIConnectionError, e:
+        # # Network communication with Stripe failed
+        #     pass
+        # except stripe.error.StripeError, e:
+        # # Display a very generic error to the user, and maybe send
+        # # yourself an email
+        #     pass
+        # except Exception, e:
+        # # Something else happened, completely unrelated to Stripe
+        #     pass
+        #
+        # success = True
+        # if err != "no errors":
+        #     payment_success = False
+        # else:
+        kit_name = request.POST['kitName']
+        samples = request.POST['samples']
+        samples = ast.literal_eval(samples)
+        # build kit zip file --> DONE
+        # create custom kit object,
+        # email kit to user --> DONE
         try:
-            charge = stripe.Charge.create(
-            amount=1000, # amount in cents, again
-            currency="usd",
-            card=token,
-            description=user.email
-        )
-        except stripe.error.CardError, e:
-        # Since it's a decline, stripe.error.CardError will be caught
-            body = e.json_body
-            err = body['error']
-            print "Status is: %s" % e.http_status
-            print "Type is: %s" % err['type']
-            print "Code is: %s" % err['code']
-        # param is '' in this case
-        #     print "Param is: %s" % err['param']
-            print "Message is: %s" % err['message']
-            err = err['message']
-        except stripe.error.InvalidRequestError, e:
-        # Invalid parameters were supplied to Stripe's API
-            pass
-        except stripe.error.AuthenticationError, e:
-        # Authentication with Stripe's API failed
-        # (maybe you changed API keys recently)
-            pass
-        except stripe.error.APIConnectionError, e:
-        # Network communication with Stripe failed
-            pass
-        except stripe.error.StripeError, e:
-        # Display a very generic error to the user, and maybe send
-        # yourself an email
-            pass
-        except Exception, e:
-        # Something else happened, completely unrelated to Stripe
-            pass
+            sample_objects = []
+            for sample in samples:
+                sample_objects.append(Sample.objects.get(pk=sample))
 
-        success = True
-        if err != "no errors":
-            success = False
-        else:
-            success = True
-            kit_name = request.POST['kitName']
-            samples = request.POST['samples']
-            samples = ast.literal_eval(samples)
-            # build kit, email kit to user.
+            zip_subdir = kit_name
+            zip_filename = os.path.join(settings.MEDIA_ROOT, "custom_kits", "%s.zip" % zip_subdir)
+            # The zip compressor
+            zf = zipfile.ZipFile(zip_filename, mode='w')
+
+            for sample in sample_objects:
+                # Calculate path for file in zip
+                fpath = sample.wav.url[1:]
+                fpath = os.path.join(settings.BASE_DIR, fpath)
+                fname = os.path.basename(fpath)
+                zip_path = os.path.join(zip_subdir, sample.type, fname)
+                # Add file, at correct path
+                zf.write(fpath, zip_path)
+
+            # Must close zip for all contents to be written
+            zf.close()
+            #zip_created = True
+            try:
+                email = user.email
+                mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
+                mail.attach_file(zip_filename)
+                mail.send()
+                #mail_sent = True
+            except:
+                mail_sent = False
+                return "Attachment error"
+        except:
+            zip_created = False
+            return "Zip File Error"
+
         result = []
-        result.append({"success": success})
-        result.append({"error": err})
+        result.append({"payment_success": payment_success})
+        result.append({"payment_error": payment_error})
+        result.append({"zip_created": zip_created})
+        result.append({"mail_sent": mail_sent})
         result.append({"samples": samples[0]})
         resp = HttpResponse(content_type="application/json")
         json.dump(result, resp)
