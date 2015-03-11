@@ -197,6 +197,7 @@ class CustomKitPaymentView(View):
         # build kit zip file --> DONE
         # create custom kit object and associate with User --> DONE
         # email kit to user --> DONE
+            payment_success = True
             try:
                 sample_objects = []
                 for sample in samples:

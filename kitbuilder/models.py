@@ -61,7 +61,7 @@ class KitDescription (CommonInfo):
     selling_point3_title = models.CharField(max_length=50, blank=True)
     number_of_samples = models.IntegerField(default=0)
     author = models.CharField(max_length=50, blank=True)
-    date_created = models.CharField(max_length=50, blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
 
 class Kit (CommonInfo):
