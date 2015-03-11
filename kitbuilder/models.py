@@ -1,6 +1,7 @@
 from django.db import models
 from userprofile.models import UserProfile
 import os
+from datetime import date
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
@@ -61,7 +62,7 @@ class KitDescription (CommonInfo):
     selling_point3_title = models.CharField(max_length=50, blank=True)
     number_of_samples = models.IntegerField(default=0)
     author = models.CharField(max_length=50, blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateField(default=date.today())
 
 
 class Kit (CommonInfo):
