@@ -148,6 +148,17 @@ def kit_delete(sender, instance, **kwargs):
     instance.image.delete(False)
 
 
+@receiver(pre_delete, sender=CustomKit)
+def custom_kit_delete(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    zip_filename = instance.name
+    user_id = instance.user.id
+    zip_filepath = os.path.join(settings.MEDIA_ROOT, "custom_kits", "user_"+str(user_id), "%s.zip" % zip_filename)
+    try:
+        os.remove(zip_filepath)
+    except OSError:
+        pass
+
 
 
 

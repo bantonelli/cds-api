@@ -68,7 +68,7 @@ class CustomKitPurchasedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomKit
-        fields = ('id', 'name', 'user', 'date', 'samples', 'tags')
+        fields = ('id', 'name', 'user', 'date', 'samples', 'tags', 'zip_file')
 
 
 #USER PROFILE

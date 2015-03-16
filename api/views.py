@@ -204,8 +204,11 @@ class CustomKitPaymentView(View):
                     sample_objects.append(Sample.objects.get(pk=sample))
 
                 zip_subdir = kit_name
-                zip_filename = os.path.join(settings.MEDIA_ROOT, "custom_kits", "%s.zip" % zip_subdir)
-                zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "%s.zip" % zip_subdir)
+                zip_filepath = os.path.join(settings.MEDIA_ROOT, "custom_kits", "user_"+str(user_id))
+                if not os.path.exists(zip_filepath):
+                    os.makedirs(zip_filepath)
+                zip_filename = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
+                zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "user_"+str(user_id), "%s.zip" % zip_subdir)
                 # The zip compressor
                 zf = zipfile.ZipFile(zip_filename, mode='w')
 
