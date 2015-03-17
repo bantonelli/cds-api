@@ -48,7 +48,7 @@ class KitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Kit
-        fields = ('id', 'name', 'new', 'on_sale', 'soundcloud', 'image', 'tags', 'description', 'price', 'sale', 'user_rating', 'samples')
+        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'tags', 'description', 'price', 'sale', 'samples')
 
 
 class CustomKitSerializer(serializers.ModelSerializer):

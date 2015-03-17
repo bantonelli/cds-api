@@ -2,6 +2,8 @@ import os
 import zipfile
 import StringIO
 import ast
+import cgi
+
 from rest_framework import generics, permissions
 from permissions import IsKitOwner, IsUser
 from serializers import *
@@ -10,6 +12,7 @@ from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
+from django.core.exceptions import ObjectDoesNotExist
 
 User = get_user_model()
 
@@ -139,6 +142,7 @@ class CustomKitPaymentView(View):
         return resp
 
     def post(self, request):
+        result = []
         payment_success = None
         payment_error = "no errors"
         zip_created = None
@@ -152,7 +156,23 @@ class CustomKitPaymentView(View):
         samples = ast.literal_eval(samples)
 
         stripe.api_key = settings.STRIPE_SECRET
-        user = User.objects.get(pk=user_id)
+        # Check for user input / post data errors
+        user = None
+        try:
+            user = User.objects.get(pk=user_id)
+        except ObjectDoesNotExist:
+            result.append({"data_error": "user is invalid"})
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
+
+        users_custom_kits = user.profile.custom_kits.all()
+        if users_custom_kits.filter(name=kit_name).exists():
+            result.append({"data_error": "You already have a custom kit with that name!"})
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
+
         charge_amount = int((len(samples) * 100) * 0.75)
         # Create the charge on Stripe's servers - this will charge the user's card
         try:
@@ -189,6 +209,7 @@ class CustomKitPaymentView(View):
             pass
         except Exception, e:
         # Something else happened, completely unrelated to Stripe
+            payment_error = "There was an error processing your payment."
             pass
 
         if payment_error != "no errors":
@@ -201,7 +222,11 @@ class CustomKitPaymentView(View):
             try:
                 sample_objects = []
                 for sample in samples:
-                    sample_objects.append(Sample.objects.get(pk=sample))
+                    # Try to get sample. If it doesn't exist pass.
+                    try:
+                        sample_objects.append(Sample.objects.get(pk=sample))
+                    except ObjectDoesNotExist:
+                        pass
 
                 zip_subdir = kit_name
                 zip_filepath = os.path.join(settings.MEDIA_ROOT, "custom_kits", "user_"+str(user_id))
@@ -247,7 +272,6 @@ class CustomKitPaymentView(View):
                 zip_created = False
                 return "Zip File Error"
 
-        result = []
         result.append({"payment_success": payment_success})
         result.append({"payment_error": payment_error})
         result.append({"zip_created": zip_created})

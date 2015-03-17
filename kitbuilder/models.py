@@ -66,7 +66,7 @@ class KitDescription (CommonInfo):
 
 
 class Kit (CommonInfo):
-    new = models.BooleanField(default=True)
+    active = models.BooleanField(default=True)
     on_sale = models.BooleanField(default=False)
     soundcloud = models.CharField(max_length=500)
     image = models.FileField(upload_to=upload_kit_image, storage=OverwriteStorage())
@@ -74,7 +74,6 @@ class Kit (CommonInfo):
     description = models.ForeignKey(KitDescription)
     price = models.ForeignKey(Price)
     sale = models.ForeignKey(Sale)
-    user_rating = models.DecimalField(max_digits=5, decimal_places=4, default=0)
 
 
 # Classes and Functions for Sample Model

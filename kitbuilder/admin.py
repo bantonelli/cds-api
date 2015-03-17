@@ -2,8 +2,8 @@ from django.contrib import admin
 from models import *
 
 class KitAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'user_rating')
-    list_filter = ('tags', 'on_sale', 'new')
+    list_display = ('name', 'price')
+    list_filter = ('tags', 'on_sale', 'active')
 
 class SampleAdmin(admin.ModelAdmin):
     list_display = ('name', 'kit', 'type')
