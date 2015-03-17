@@ -272,10 +272,12 @@ class CustomKitPaymentView(View):
                 zip_created = False
                 return "Zip File Error"
 
-        result.append({"payment_success": payment_success})
-        result.append({"payment_error": payment_error})
-        result.append({"zip_created": zip_created})
-        result.append({"mail_sent": mail_sent})
+        result.append({
+            "payment_success": payment_success,
+            "payment_error": payment_error,
+            "zip_created": zip_created,
+            "mail_sent": mail_sent
+        })
         #result.append({"samples": samples[0]})
         resp = HttpResponse(content_type="application/json")
         json.dump(result, resp)
