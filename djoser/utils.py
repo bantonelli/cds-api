@@ -51,9 +51,11 @@ class ActionViewMixin(object):
 
 class SendEmailViewMixin(object):
 
+    #3rd
     def send_email(self, to_email, from_email, context):
         send_email(to_email, from_email, context, **self.get_send_email_extras())
 
+    # 1st
     def get_send_email_kwargs(self, user):
         return {
             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
@@ -64,6 +66,7 @@ class SendEmailViewMixin(object):
     def get_send_email_extras(self):
         raise NotImplemented
 
+    # 2nd
     def get_email_context(self, user):
         token = self.token_generator.make_token(user)
         uid = encode_uid(user.pk)

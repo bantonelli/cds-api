@@ -173,7 +173,7 @@ class CustomKitPaymentView(View):
             json.dump(result, resp)
             return resp
 
-        charge_amount = int((len(samples) * 100) * 0.75)
+        charge_amount = int((len(samples) * 100) * 0.50)
         # Create the charge on Stripe's servers - this will charge the user's card
         try:
             charge = stripe.Charge.create(

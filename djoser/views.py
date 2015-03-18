@@ -6,6 +6,13 @@ from provider.oauth2.models import AccessToken
 from django.contrib.auth.tokens import default_token_generator
 from . import serializers, settings, utils
 
+import json
+import stripe
+from django.http import HttpResponse
+from django.views.generic import View
+from django.core.exceptions import ObjectDoesNotExist
+
+
 User = get_user_model()
 
 
@@ -22,6 +29,54 @@ class OauthUserMixin():
             user = token.user
             return user
 
+
+# curl -X POST http://127.0.0.1:8000/api/accounts/resend-activation --data 'userID=12'
+class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
+
+    token_generator = default_token_generator
+
+    def post(self, request):
+        result = []
+        mail_sent = False
+        user_id = request.POST['userID']
+
+        # Check for user input / post data errors
+        user = None
+        try:
+            user = User.objects.get(pk=user_id)
+        except ObjectDoesNotExist:
+            result.append({"data_error": "user is invalid"})
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
+
+        if settings.get('SEND_ACTIVATION_EMAIL'):
+            self.send_email(**self.get_send_email_kwargs(user))
+            mail_sent = True
+
+        result.append({
+            "mail_sent": mail_sent
+        })
+        #result --> [{mail_sent: true}]
+        #result.append({"samples": samples[0]})
+        resp = HttpResponse(content_type="application/json")
+        json.dump(result, resp)
+        return resp
+
+
+    def get_send_email_extras(self):
+        return {
+            'subject_template_name': 'activation_email_subject.txt',
+            'plain_body_template_name': 'activation_email_body.txt',
+        }
+
+    def get_email_context(self, user):
+        context = super(ResendActivationEmailView, self).get_email_context(user)
+        context['url'] = settings.get('ACTIVATION_URL').format(**context)
+        return context
+
+
+
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUserMixin):
     permission_classes = (
         permissions.AllowAny,
@@ -34,6 +89,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
         return serializers.UserRegistrationSerializer
 
     def post_save(self, obj, created=False):
+        # For Token Based authentication only not Oauth2
         if settings.get('LOGIN_AFTER_REGISTRATION'):
             Token.objects.get_or_create(user=obj)
         if settings.get('SEND_ACTIVATION_EMAIL'):

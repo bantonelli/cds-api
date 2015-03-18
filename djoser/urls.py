@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from . import views
 from django.contrib.auth import get_user_model
+from django.views.decorators.csrf import csrf_exempt
 
 User = get_user_model()
 
@@ -14,4 +15,5 @@ urlpatterns = patterns('',
     url(r'^password$', views.SetPasswordView.as_view(), name='set_password'),
     url(r'^password/reset$', views.PasswordResetView.as_view(), name='password_reset'),
     url(r'^password/reset/confirm$', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    url(r'^resend-activation$', csrf_exempt(views.ResendActivationEmailView.as_view()), name='resend_activate'),
 )
