@@ -25,6 +25,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (
+            'id',
             User.USERNAME_FIELD,
             'password',
         )

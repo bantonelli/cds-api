@@ -1,6 +1,6 @@
 import json
 import urlparse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.http import HttpResponseRedirect, QueryDict
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
@@ -343,6 +343,7 @@ class Redirect(OAuthView, Mixin):
         return HttpResponseRedirect(redirect_uri)
 
 
+#FUNCTIONS AS LOGIN VIEW (basically...)
 class AccessToken(OAuthView, Mixin):
     """
     :attr:`AccessToken` handles creation and refreshing of access tokens.
@@ -471,27 +472,31 @@ class AccessToken(OAuthView, Mixin):
         Returns a successful response after creating the access token
         as defined in :rfc:`5.1`.
         """
+        # If user is not active respond with error
+        response_data = {'error': 'User account is not active'}
+        # If user is active respond with auth token and user info
+        if access_token.user.is_active:
+            response_data = {
+                'access_token': access_token.token,
+                'token_type': constants.TOKEN_TYPE,
+                'expires_in': access_token.get_expire_delta(),
+                'scope': ' '.join(scope.names(access_token.scope)),
+                'user_id': access_token.user.id,
+            }
+            # Not all access_tokens are given a refresh_token
+            # (for example, public clients doing password auth)
+            try:
+                rt = access_token.refresh_token
+                response_data['refresh_token'] = rt.token
+            except ObjectDoesNotExist:
+                pass
 
-        response_data = {
-            'access_token': access_token.token,
-            'token_type': constants.TOKEN_TYPE,
-            'expires_in': access_token.get_expire_delta(),
-            'scope': ' '.join(scope.names(access_token.scope)),
-            'user_id': access_token.user.id,
-        }
-
-        # Not all access_tokens are given a refresh_token
-        # (for example, public clients doing password auth)
-        try:
-            rt = access_token.refresh_token
-            response_data['refresh_token'] = rt.token
-        except ObjectDoesNotExist:
-            pass
-
-        return HttpResponse(
-            json.dumps(response_data), content_type='application/json'
-            #json.dumps(response_data), mimetype='application/json'
-        )
+            return HttpResponse(
+                json.dumps(response_data), content_type='application/json'
+                #json.dumps(response_data), mimetype='application/json'
+            )
+        else:
+            return HttpResponse(json.dumps(response_data), content_type='application/json', status=403)
 
     def authorization_code(self, request, data, client):
         """
