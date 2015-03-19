@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from provider.oauth2.models import AccessToken
 from django.contrib.auth.tokens import default_token_generator
-from . import serializers, settings, utils
+from . import serializers, settings, utils, djpermissions
 
 import json
 import stripe
@@ -164,7 +164,7 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
 
 class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
     permission_classes = (
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticated, djpermissions.IsActiveUser
     )
 
     def get_serializer_class(self):
@@ -210,6 +210,7 @@ class ActivationView(utils.ActionViewMixin, generics.GenericAPIView):
             token, _ = Token.objects.get_or_create(user=serializer.user)
             data = serializers.TokenSerializer(token).data
         else:
+            # Make this send back user
             data = {}
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -217,7 +218,7 @@ class ActivationView(utils.ActionViewMixin, generics.GenericAPIView):
 class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
     serializer_class = serializers.SetUsernameSerializer
     permission_classes = (
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticated, djpermissions.IsActiveUser
     )
 
     def get_serializer_class(self):
@@ -236,7 +237,7 @@ class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
     model = User
     serializer_class = serializers.UserSerializer
     permission_classes = (
-        permissions.IsAuthenticated,
+        permissions.IsAuthenticated, djpermissions.IsActiveUser
     )
 
     def get_object(self, *args, **kwargs):
