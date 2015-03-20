@@ -116,7 +116,6 @@ import json
 import stripe
 from django.http import HttpResponse
 from django.views.generic import View
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.core.context_processors import csrf
@@ -132,14 +131,6 @@ from django.core.context_processors import csrf
         # 2) Save the Kit
         # 3) Email the user
 class CustomKitPaymentView(View):
-
-    def get(self, request):
-        # <view logic>
-        result = []
-        result.append({'csrf_token': unicode(csrf(request)['csrf_token'])})
-        resp = HttpResponse(content_type="application/json")
-        json.dump(result, resp)
-        return resp
 
     def post(self, request):
         result = []

@@ -18,7 +18,9 @@ urlpatterns = patterns('',
                         # url(r'^api/samples/endproducts/(?P<pk>[0-9]+)/$', views.SampleDetail.as_view()),
                         url(r'^api/custom-kits/$', views.CustomKitList.as_view()),
                         url(r'^api/custom-kits/(?P<pk>[0-9]+)/$', views.CustomKitDetail.as_view()),
-                        url(r'^api/custom-kits/purchase/$', csrf_exempt(views.CustomKitPaymentView.as_view())),
+                        # purchase view requires csrf token.
+                        #url(r'^api/custom-kits/purchase/$', csrf_exempt(views.CustomKitPaymentView.as_view())),
+                        url(r'^api/custom-kits/purchase/$', views.CustomKitPaymentView.as_view()),
                        )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

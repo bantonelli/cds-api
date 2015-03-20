@@ -29,16 +29,34 @@ class OauthUserMixin():
             user = token.user
             return user
 
+from django.core.context_processors import csrf
 
-# curl -X POST http://127.0.0.1:8000/api/accounts/resend-activation --data 'userID=12'
+# curl -X GET http://127.0.0.1:8000/api/accounts/resend-activation
+# curl -X POST http://127.0.0.1:8000/api/accounts/resend-activation --data 'userID=12&csrfmiddlewaretoken=1jln3sCDdzfTquZighUrMHGk4helQKOs'
+# 1jln3sCDdzfTquZighUrMHGk4helQKOs
+
+class SetCSRFView(View):
+
+    def get(self, request):
+        return HttpResponse("csrftoken cookie set")
+
+
 class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
 
     token_generator = default_token_generator
 
+    # def get(self, request):
+    #     # <view logic>
+    #     result = []
+    #     result.append({'csrf_token': unicode(csrf(request)['csrf_token'])})
+    #     resp = HttpResponse(content_type="application/json")
+    #     json.dump(result, resp)
+    #     return resp
+
     def post(self, request):
         result = []
         mail_sent = False
-        user_id = request.POST['userID']
+        user_id = request.POST['user_id']
 
         # Check for user input / post data errors
         user = None
