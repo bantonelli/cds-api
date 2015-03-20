@@ -38,7 +38,7 @@ from django.core.context_processors import csrf
 class SetCSRFView(View):
 
     def get(self, request):
-        return HttpResponse("csrftoken cookie set")
+        return HttpResponse("cookie set")
 
 
 class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
