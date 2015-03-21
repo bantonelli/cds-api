@@ -190,8 +190,9 @@ AUTH_USER_MODEL = 'useraccount.User'
 DJOSER = {
     'DOMAIN': '127.0.0.1:4200',
     'SITE_NAME': 'Custom Drum Samples',
-    'PASSWORD_RESET_CONFIRM_URL': 'account/password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'account-settings/password-reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'registration/activate/{uid}/{token}',
+    'ACCOUNT_UPDATE_CONFIRM_URL': 'account-settings/update-info/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
 }
 

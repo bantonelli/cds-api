@@ -6,22 +6,42 @@ from . import constants, utils
 User = get_user_model()
 
 
+class UidAndTokenSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+
+    def validate_uid(self, attrs, source):
+        value = attrs[source]
+        try:
+            uid = utils.decode_uid(value)
+            self.user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, ValueError, OverflowError) as error:
+            raise serializers.ValidationError(error)
+        return attrs
+
+    def validate(self, attrs):
+        attrs = super(UidAndTokenSerializer, self).validate(attrs)
+        if not self.context['view'].token_generator.check_token(self.user, attrs['token']):
+            raise serializers.ValidationError(constants.INVALID_TOKEN_ERROR)
+        return attrs
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (
             User.USERNAME_FIELD,
+            'email',
             'id',
         )
         read_only_fields = (
-            User.USERNAME_FIELD,
-            'username',
             'id',
         )
 
 
-class UserUpdateSerializer(serializers.ModelSerializer):
+# Serializer that sets the Temp email and username
+class UpdateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
@@ -34,19 +54,12 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = (
             User.USERNAME_FIELD,
             'username',
-            'id',
         )
 
-    def save(self, **kwargs):
-        args = dict(self.init_data.items())
-        user_id = args['user_id']
-        temp_email = args['temp_email']
-        temp_username = args['temp_username']
-        user = User.objects.get(pk=user_id)
-        user.temp_email = temp_email
-        user.temp_username = temp_username
-        self.object = user
-        return self.object
+    def update(self, instance, validated_data):
+        instance.temp_email = validated_data.get('temp_email', instance.temp_email)
+        instance.temp_username = validated_data.get('temp_username', instance.temp_username)
+        return instance
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -86,50 +99,30 @@ class UserRegistrationWithAuthTokenSerializer(UserRegistrationSerializer):
         )
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = (
-            User.USERNAME_FIELD,
-            'password',
-        )
-        write_only_fields = (
-            'password',
-        )
-
-    def validate(self, attrs):
-        self.object = authenticate(username=attrs[User.USERNAME_FIELD], password=attrs['password'])
-        if self.object:
-            if not self.object.is_active:
-                raise serializers.ValidationError(constants.DISABLE_ACCOUNT_ERROR)
-            return attrs
-        else:
-            raise serializers.ValidationError(constants.INVALID_CREDENTIALS_ERROR)
+# class UserLoginSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = User
+#         fields = (
+#             User.USERNAME_FIELD,
+#             'password',
+#         )
+#         write_only_fields = (
+#             'password',
+#         )
+#
+#     def validate(self, attrs):
+#         self.object = authenticate(username=attrs[User.USERNAME_FIELD], password=attrs['password'])
+#         if self.object:
+#             if not self.object.is_active:
+#                 raise serializers.ValidationError(constants.DISABLE_ACCOUNT_ERROR)
+#             return attrs
+#         else:
+#             raise serializers.ValidationError(constants.INVALID_CREDENTIALS_ERROR)
 
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
-
-
-class UidAndTokenSerializer(serializers.Serializer):
-    uid = serializers.CharField()
-    token = serializers.CharField()
-
-    def validate_uid(self, attrs, source):
-        value = attrs[source]
-        try:
-            uid = utils.decode_uid(value)
-            self.user = User.objects.get(pk=uid)
-        except (User.DoesNotExist, ValueError, TypeError, ValueError, OverflowError) as error:
-            raise serializers.ValidationError(error)
-        return attrs
-
-    def validate(self, attrs):
-        attrs = super(UidAndTokenSerializer, self).validate(attrs)
-        if not self.context['view'].token_generator.check_token(self.user, attrs['token']):
-            raise serializers.ValidationError(constants.INVALID_TOKEN_ERROR)
-        return attrs
 
 
 class PasswordSerializer(serializers.Serializer):

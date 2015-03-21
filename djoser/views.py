@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from provider.oauth2.models import AccessToken
 from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings as django_settings
 from . import serializers, settings, utils, djpermissions
 
 import json
@@ -251,7 +252,7 @@ class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserM
         return response.Response(status=status.HTTP_200_OK)
 
 
-class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
+class UserView(generics.RetrieveAPIView, OauthUserMixin):
     model = User
     serializer_class = serializers.UserSerializer
     permission_classes = (
@@ -278,25 +279,56 @@ class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
 # maddenmoment@gmail.com
 # curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde8" http://localhost:8000/api/accounts/me
 
-class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUserMixin):
+
+class UpdateUserView(utils.SendEmailViewMixin, generics.RetrieveUpdateAPIView, OauthUserMixin):
+
+    model = User
     permission_classes = (
         permissions.IsAuthenticated, djpermissions.IsActiveUser,
     )
     token_generator = default_token_generator
 
+    def get_object(self, *args, **kwargs):
+        return self.get_current_user(self.request)
+
     def get_serializer_class(self):
-        return serializers.UserUpdateSerializer
+        return serializers.UpdateUserSerializer
 
     def post_save(self, obj, created=False):
         self.send_email(**self.get_send_email_kwargs(obj))
 
     def get_send_email_extras(self):
         return {
-            'subject_template_name': 'activation_email_subject.txt',
-            'plain_body_template_name': 'activation_email_body.txt',
+            'subject_template_name': 'confirm_user_update_email_subject.txt',
+            'plain_body_template_name': 'confirm_user_update_email_body.txt',
+        }
+
+    # Override original implementation of this method to send
+    # confirmation to temp_email address.
+    def get_send_email_kwargs(self, user):
+        return {
+            'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
+            'to_email': user.temp_email,
+            'context': self.get_email_context(user),
         }
 
     def get_email_context(self, user):
-        context = super(RegistrationView, self).get_email_context(user)
-        context['url'] = settings.get('ACTIVATION_URL').format(**context)
+        context = super(UpdateUserView, self).get_email_context(user)
+        context['url'] = settings.get('ACCOUNT_UPDATE_CONFIRM_URL').format(**context)
         return context
+
+
+class UpdateUserConfirmView(utils.ActionViewMixin, generics.GenericAPIView):
+    permission_classes = (
+        permissions.AllowAny,
+    )
+    token_generator = default_token_generator
+
+    def get_serializer_class(self):
+        return serializers.UidAndTokenSerializer
+
+    def action(self, serializer):
+        serializer.user.email = serializer.user.temp_email
+        serializer.user.username = serializer.user.temp_username
+        serializer.user.save()
+        return response.Response(status=status.HTTP_200_OK)
