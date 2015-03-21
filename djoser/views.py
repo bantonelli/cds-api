@@ -149,6 +149,23 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
 #         return response.Response(status=status.HTTP_200_OK)
 
 
+class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
+    permission_classes = (
+        permissions.IsAuthenticated, djpermissions.IsActiveUser
+    )
+
+    def get_serializer_class(self):
+        if settings.get('SET_PASSWORD_RETYPE'):
+            return serializers.SetPasswordRetypeSerializer
+        return serializers.SetPasswordSerializer
+
+    def action(self, serializer):
+        user = self.get_current_user(self.request)
+        user.set_password(serializer.data['new_password'])
+        user.save()
+        return response.Response(status=status.HTTP_200_OK)
+
+
 class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generics.GenericAPIView):
     serializer_class = serializers.PasswordResetSerializer
     permission_classes = (
@@ -178,23 +195,6 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
         context = super(PasswordResetView, self).get_email_context(user)
         context['url'] = settings.get('PASSWORD_RESET_CONFIRM_URL').format(**context)
         return context
-
-
-class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):
-    permission_classes = (
-        permissions.IsAuthenticated, djpermissions.IsActiveUser
-    )
-
-    def get_serializer_class(self):
-        if settings.get('SET_PASSWORD_RETYPE'):
-            return serializers.SetPasswordRetypeSerializer
-        return serializers.SetPasswordSerializer
-
-    def action(self, serializer):
-        user = self.get_current_user(self.request)
-        user.set_password(serializer.data['new_password'])
-        user.save()
-        return response.Response(status=status.HTTP_200_OK)
 
 
 class PasswordResetConfirmView(utils.ActionViewMixin, generics.GenericAPIView):
@@ -261,10 +261,42 @@ class UserView(generics.RetrieveUpdateAPIView, OauthUserMixin):
     def get_object(self, *args, **kwargs):
         return self.get_current_user(self.request)
 
+    # def post_save(self, obj, created=False):
+    #     print 'tags', self.request.DATA
+    #     obj.tags.add(self.request.DATA['tags'])
+    #     return super(EventListAPIView, self).post_save(obj)
+
+    # def pre_save(self, obj):
+    #     """
+    #     Set the object's owner, based on the incoming request.
+    #     """
+    #     obj.user = self.request.user
+    #     return super(EventListAPIView, self).pre_save(obj)
+
 # bantonelli07@gmail.com
 # curl -H "Authorization: Bearer 07a5d961e3364d2292da03b0c52156c3969548ed" http://localhost:8000/api/accounts/me
 # maddenmoment@gmail.com
 # curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde8" http://localhost:8000/api/accounts/me
 
+class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUserMixin):
+    permission_classes = (
+        permissions.IsAuthenticated, djpermissions.IsActiveUser,
+    )
+    token_generator = default_token_generator
 
-# curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde9" http://localhost:8000/api/accounts/me
+    def get_serializer_class(self):
+        return serializers.UserUpdateSerializer
+
+    def post_save(self, obj, created=False):
+        self.send_email(**self.get_send_email_kwargs(obj))
+
+    def get_send_email_extras(self):
+        return {
+            'subject_template_name': 'activation_email_subject.txt',
+            'plain_body_template_name': 'activation_email_body.txt',
+        }
+
+    def get_email_context(self, user):
+        context = super(RegistrationView, self).get_email_context(user)
+        context['url'] = settings.get('ACTIVATION_URL').format(**context)
+        return context

@@ -16,8 +16,37 @@ class UserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             User.USERNAME_FIELD,
+            'username',
             'id',
         )
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = tuple(User.REQUIRED_FIELDS) + (
+            User.USERNAME_FIELD,
+            'temp_username',
+            'temp_email',
+            'id',
+        )
+        read_only_fields = (
+            User.USERNAME_FIELD,
+            'username',
+            'id',
+        )
+
+    def save(self, **kwargs):
+        args = dict(self.init_data.items())
+        user_id = args['user_id']
+        temp_email = args['temp_email']
+        temp_username = args['temp_username']
+        user = User.objects.get(pk=user_id)
+        user.temp_email = temp_email
+        user.temp_username = temp_username
+        self.object = user
+        return self.object
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
