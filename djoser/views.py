@@ -8,7 +8,6 @@ from django.conf import settings as django_settings
 from . import serializers, settings, utils, djpermissions
 
 import json
-import stripe
 from django.http import HttpResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,8 +19,10 @@ User = get_user_model()
 class OauthUserMixin():
 
     def get_current_user(self, request):
+        # If the user is in session auth get that user
         if request.user:
             return request.user
+        # Otherwise get the user based on Auth header
         elif request.META['Authorization']:
             auth_header = request.META['Authorization']
             index = auth_header.find('Bearer') + 7
@@ -29,13 +30,13 @@ class OauthUserMixin():
             token = AccessToken.objects.get_token(token=token_string)
             user = token.user
             return user
+        else:
+            return None
 
-from django.core.context_processors import csrf
 
 # curl -X GET http://127.0.0.1:8000/api/accounts/resend-activation
 # curl -X POST http://127.0.0.1:8000/api/accounts/resend-activation --data 'userID=12&csrfmiddlewaretoken=1jln3sCDdzfTquZighUrMHGk4helQKOs'
 # 1jln3sCDdzfTquZighUrMHGk4helQKOs
-
 class SetCSRFView(View):
 
     def get(self, request):
@@ -46,14 +47,6 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
 
     token_generator = default_token_generator
 
-    # def get(self, request):
-    #     # <view logic>
-    #     result = []
-    #     result.append({'csrf_token': unicode(csrf(request)['csrf_token'])})
-    #     resp = HttpResponse(content_type="application/json")
-    #     json.dump(result, resp)
-    #     return resp
-
     def post(self, request):
         result = []
         mail_sent = False
@@ -63,25 +56,21 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
         user = None
         try:
             user = User.objects.get(pk=user_id)
+            if settings.get('SEND_ACTIVATION_EMAIL'):
+                self.send_email(**self.get_send_email_kwargs(user))
+                mail_sent = True
+            # Build JSON response object
+            result.append({
+                "mail_sent": mail_sent
+            })
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
         except ObjectDoesNotExist:
             result.append({"data_error": "user is invalid"})
             resp = HttpResponse(content_type="application/json")
             json.dump(result, resp)
             return resp
-
-        if settings.get('SEND_ACTIVATION_EMAIL'):
-            self.send_email(**self.get_send_email_kwargs(user))
-            mail_sent = True
-
-        result.append({
-            "mail_sent": mail_sent
-        })
-        #result --> [{mail_sent: true}]
-        #result.append({"samples": samples[0]})
-        resp = HttpResponse(content_type="application/json")
-        json.dump(result, resp)
-        return resp
-
 
     def get_send_email_extras(self):
         return {
@@ -93,7 +82,6 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
         context = super(ResendActivationEmailView, self).get_email_context(user)
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
-
 
 
 class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUserMixin):
@@ -162,9 +150,13 @@ class SetPasswordView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserM
 
     def action(self, serializer):
         user = self.get_current_user(self.request)
-        user.set_password(serializer.data['new_password'])
-        user.save()
-        return response.Response(status=status.HTTP_200_OK)
+        if user is not None:
+            user.set_password(serializer.data['new_password'])
+            user.save()
+            data = {"password_reset": True}
+            return response.Response(data=data, status=status.HTTP_200_OK)
+        else:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generics.GenericAPIView):
@@ -247,9 +239,12 @@ class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserM
 
     def action(self, serializer):
         user = self.get_current_user(self.request)
-        setattr(user, User.USERNAME_FIELD, serializer.data['new_' + User.USERNAME_FIELD])
-        user.save()
-        return response.Response(status=status.HTTP_200_OK)
+        if user is not None:
+            setattr(user, User.USERNAME_FIELD, serializer.data['new_' + User.USERNAME_FIELD])
+            user.save()
+            return response.Response(status=status.HTTP_200_OK)
+        else:
+            return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserView(generics.RetrieveAPIView, OauthUserMixin):
@@ -280,7 +275,7 @@ class UserView(generics.RetrieveAPIView, OauthUserMixin):
 # curl -H "Authorization: Bearer a278f591253645a35a262941e8b466f8bf14dde8" http://localhost:8000/api/accounts/me
 
 
-class UpdateUserView(utils.SendEmailViewMixin, generics.RetrieveUpdateAPIView, OauthUserMixin):
+class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUserMixin):
 
     model = User
     permission_classes = (

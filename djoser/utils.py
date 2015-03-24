@@ -38,6 +38,9 @@ def send_email(to_email, from_email, context, subject_template_name,
 
 class ActionViewMixin(object):
 
+    # Basically This mixin defines a POST method handler
+    # that triggers the main action of the view.
+        # Main action of the view could be
     def post(self, request):
         serializer = self.get_serializer(data=request.DATA)
         if serializer.is_valid():

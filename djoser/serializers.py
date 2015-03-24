@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from . import constants, utils
@@ -56,10 +57,28 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'username',
         )
 
-    def update(self, instance, validated_data):
-        instance.temp_email = validated_data.get('temp_email', instance.temp_email)
-        instance.temp_username = validated_data.get('temp_username', instance.temp_username)
-        return instance
+    def validate_temp_email(self, value, source):
+        from django.core.validators import validate_email
+        args = dict(self.init_data.items())
+        email = args['temp_email']
+        try:
+            validate_email(email)
+            return value
+        except ValidationError:
+            raise serializers.ValidationError("Not a valid email address")
+
+    def validate_temp_username(self, value, source):
+        from django import forms
+        username_field = forms.CharField(max_length=30)
+        args = dict(self.init_data.items())
+        temp_username = args['temp_username']
+        try:
+            username_field.clean(temp_username)
+            return value
+        except ValidationError as e:
+            raise serializers.ValidationError(e)
+        #u'foo@example.com'
+
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
