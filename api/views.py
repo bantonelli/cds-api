@@ -218,15 +218,20 @@ class CustomKitPaymentView(View):
                         sample_objects.append(Sample.objects.get(pk=sample))
                     except ObjectDoesNotExist:
                         pass
-
+                #Build a path for the zip file that is inside of a folder that holds user-specific custom kit zips
                 zip_subdir = kit_name
                 zip_filepath = os.path.join(settings.MEDIA_ROOT, "custom_kits", "user_"+str(user_id))
+
+                # If the user's zip file folder doesn't exist create one
                 if not os.path.exists(zip_filepath):
                     os.makedirs(zip_filepath)
-                zip_filename = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
+
+                # Create the location for the zip file and the extension
+                zip_file = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
+                # Build the media hosted URL path for the zip file (where it can be downloaded)
                 zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "custom_kits", "user_"+str(user_id), "%s.zip" % zip_subdir)
-                # The zip compressor
-                zf = zipfile.ZipFile(zip_filename, mode='w')
+                # The zip compressor makes an open zip file buffer ready to be written to.
+                zf = zipfile.ZipFile(zip_file, mode='w')
 
                 for sample in sample_objects:
                     # Calculate path for file in zip
@@ -253,7 +258,7 @@ class CustomKitPaymentView(View):
                 try:
                     email = user.email
                     mail = EmailMessage("Your Custom Kit", "Here is your custom Kit", "bant7205@gmail.com", [email])
-                    mail.attach_file(zip_filename)
+                    mail.attach_file(zip_file)
                     mail.send()
                     mail_sent = True
                 except:
