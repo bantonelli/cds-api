@@ -157,6 +157,12 @@ class CustomKitPaymentView(View):
             json.dump(result, resp)
             return resp
 
+        if kit_name == "":
+            result.append({"data_error": "You have not entered a name for your custom kit!"})
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
+
         users_custom_kits = user.profile.custom_kits.all()
         if users_custom_kits.filter(name=kit_name).exists():
             result.append({"data_error": "You already have a custom kit with that name!"})
