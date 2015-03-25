@@ -163,6 +163,12 @@ class CustomKitPaymentView(View):
             json.dump(result, resp)
             return resp
 
+        if len(samples) <= 0:
+            result.append({"data_error": "You have not chosen any samples!"})
+            resp = HttpResponse(content_type="application/json")
+            json.dump(result, resp)
+            return resp
+
         users_custom_kits = user.profile.custom_kits.all()
         if users_custom_kits.filter(name=kit_name).exists():
             result.append({"data_error": "You already have a custom kit with that name!"})
@@ -192,22 +198,29 @@ class CustomKitPaymentView(View):
             payment_error = err['message']
         except stripe.error.InvalidRequestError, e:
         # Invalid parameters were supplied to Stripe's API
-            pass
+            body = e.json_body
+            err = body['error']
+            payment_error = err['message']
         except stripe.error.AuthenticationError, e:
         # Authentication with Stripe's API failed
         # (maybe you changed API keys recently)
-            pass
+            body = e.json_body
+            err = body['error']
+            payment_error = err['message']
         except stripe.error.APIConnectionError, e:
         # Network communication with Stripe failed
-            pass
+            body = e.json_body
+            err = body['error']
+            payment_error = err['message']
         except stripe.error.StripeError, e:
         # Display a very generic error to the user, and maybe send
         # yourself an email
-            pass
+            body = e.json_body
+            err = body['error']
+            payment_error = err['message']
         except Exception, e:
         # Something else happened, completely unrelated to Stripe
             payment_error = "There was an error processing your payment."
-            pass
 
         if payment_error != "no errors":
             payment_success = False
