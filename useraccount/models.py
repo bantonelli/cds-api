@@ -62,8 +62,6 @@ class User(AbstractBaseUser):
         null= True,
     )
 
-    testField = models.CharField(max_length=50, blank=True, null=True)
-
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
