@@ -167,16 +167,30 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
     token_generator = default_token_generator
 
     def action(self, serializer):
-        for user in self.get_users(serializer.data['email']):
-            self.send_email(**self.get_send_email_kwargs(user))
-        return response.Response(status=status.HTTP_200_OK)
+        user = self.get_user(serializer.data['email'])
+        if user is not None:
+            if user.is_active:
+                self.send_email(**self.get_send_email_kwargs(user))
+                return response.Response(status=status.HTTP_200_OK)
+            else:
+                data = {"user": ["The user account associated with this email is not active!"]}
+                return response.Response(data=data, status=status.HTTP_403_FORBIDDEN)
+        else:
+            data = {"email": ["The E-mail you have supplied does not match our records!"]}
+            return response.Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
-    def get_users(self, email):
-        active_users = User._default_manager.filter(
-            email__iexact=email,
-            is_active=True,
-        )
-        return (u for u in active_users if u.has_usable_password())
+    def get_user(self, email):
+        # active_users = User._default_manager.filter(
+        #     email__iexact=email,
+        #     is_active=True,
+        # )
+        # return (u for u in active_users if u.has_usable_password())
+        user = None
+        try:
+            user = User.objects.get(email=email)
+            return user
+        except ObjectDoesNotExist:
+            return None
 
     def get_send_email_extras(self):
         return {
