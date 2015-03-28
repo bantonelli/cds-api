@@ -7,6 +7,9 @@ from django.utils import timezone
 # Custom User should only be created at the start of project
 # if you create after migrations will cause errors
 
+from django.contrib.auth.hashers import (
+    check_password, make_password, is_password_usable)
+
 from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -54,6 +57,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=30)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    temp_password = models.CharField(_('temp_password'), max_length=128, blank=True, null=True)
     temp_username = models.CharField(max_length=30, blank=True)
     temp_email = models.EmailField(
         verbose_name='temp email address',
@@ -93,3 +97,6 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    def set_temp_password(self, raw_password):
+        self.temp_password = make_password(raw_password)

@@ -142,7 +142,7 @@ class UserRegistrationWithAuthTokenSerializer(UserRegistrationSerializer):
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
-
+    new_password = serializers.CharField()
 
 class PasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField()
@@ -175,13 +175,13 @@ class SetPasswordSerializer(PasswordSerializer, CurrentPasswordSerializer):
 class SetPasswordRetypeSerializer(PasswordRetypeSerializer, CurrentPasswordSerializer):
     pass
 
-
-class PasswordResetConfirmSerializer(UidAndTokenSerializer, PasswordSerializer):
-    pass
-
-
-class PasswordResetConfirmRetypeSerializer(UidAndTokenSerializer, PasswordRetypeSerializer):
-    pass
+#
+# class PasswordResetConfirmSerializer(UidAndTokenSerializer, PasswordSerializer):
+#     pass
+#
+#
+# class PasswordResetConfirmRetypeSerializer(UidAndTokenSerializer, PasswordRetypeSerializer):
+#     pass
 
 
 class SetUsernameSerializer(CurrentPasswordSerializer):

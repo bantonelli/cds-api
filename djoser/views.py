@@ -170,6 +170,9 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
         user = self.get_user(serializer.data['email'])
         if user is not None:
             if user.is_active:
+                new_password = serializer.data['new_password']
+                user.set_temp_password(new_password)
+                user.save()
                 self.send_email(**self.get_send_email_kwargs(user))
                 return response.Response(status=status.HTTP_200_OK)
             else:
@@ -211,12 +214,13 @@ class PasswordResetConfirmView(utils.ActionViewMixin, generics.GenericAPIView):
     token_generator = default_token_generator
 
     def get_serializer_class(self):
-        if settings.get('PASSWORD_RESET_CONFIRM_RETYPE'):
-            return serializers.PasswordResetConfirmRetypeSerializer
-        return serializers.PasswordResetConfirmSerializer
+        # if settings.get('PASSWORD_RESET_CONFIRM_RETYPE'):
+        #     return serializers.PasswordResetConfirmRetypeSerializer
+        # return serializers.PasswordResetConfirmSerializer
+        return serializers.UidAndTokenSerializer
 
     def action(self, serializer):
-        serializer.user.set_password(serializer.data['new_password'])
+        serializer.user.password = serializer.user.temp_password
         serializer.user.save()
         return response.Response(status=status.HTTP_200_OK)
 
