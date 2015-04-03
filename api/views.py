@@ -138,6 +138,8 @@ class CustomKitPaymentView(View):
         payment_error = "no errors"
         zip_created = None
         mail_sent = None
+        order_number = None
+        purchased_kit_id = None
 
         # Get the credit card details submitted by the form
         token = request.POST['stripeToken']
@@ -229,6 +231,7 @@ class CustomKitPaymentView(View):
         # create custom kit object and associate with User --> DONE
         # email kit to user --> DONE
             payment_success = True
+            order_number = charge.id
             try:
                 sample_objects = []
                 for sample in samples:
@@ -272,6 +275,7 @@ class CustomKitPaymentView(View):
                     # Associate samples with custom kit object
                     custom_kit.samples = sample_objects
                     custom_kit.save()
+                    purchased_kit_id = custom_kit.id
                 except:
                     return "Custom Kit Creation Error"
                 try:
@@ -288,6 +292,8 @@ class CustomKitPaymentView(View):
                 return "Zip File Error"
 
         result.append({
+            "purchased_kit_id": purchased_kit_id,
+            "order_number": order_number,
             "payment_success": payment_success,
             "payment_error": payment_error,
             "zip_created": zip_created,
