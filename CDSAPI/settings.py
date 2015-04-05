@@ -223,12 +223,15 @@ STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
 # *********** HEROKU SETTINGS *************
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-#DATABASES['default'] = dj_database_url.config()
+DATABASES['default'] = dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
+
+# hosted at https://cryptic-harbor-4037.herokuapp.com/
+# Heroku remote at https://git.heroku.com/cryptic-harbor-4037.git
 
 
