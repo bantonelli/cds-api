@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'CDSAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'dcc1pf55nk7r4b',                      # Or path to database file if using sqlite3.
+        'NAME': 'd7pajl538fmet1',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': 'dgsfxnjvbcgnxu',
-        'PASSWORD': 'pnGdfgELD-xLpQoIDiHBvZ_lEC',
-        'HOST': 'ec2-54-163-226-9.compute-1.amazonaws.com',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'USER': 'lhozmsincrgdwf',
+        'PASSWORD': '60-_sD2L9K3TjJLIrLocDBx7J8',
+        'HOST': 'ec2-174-129-197-200.compute-1.amazonaws.com',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '5432',                      # Set to empty string for default.
     }
 }
