@@ -212,8 +212,6 @@ STRIPE_PUBLISHABLE = 'pk_test_hyDepohZLg2M8UX2pYG6nhRI'
 STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
 
 #CSRF_COOKIE_NAME = 'mycsrftoken'
-
-
 # curl -X POST http://127.0.0.1:8000/api/custom-kits/purchase/ --data 'userID=1&kitName=NewCustomKit&samples=[1]'
 
                   # stripeToken: response.id,
@@ -221,3 +219,16 @@ STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
                   #   samples: JSON.stringify(samples),
                   #   kitName: kitName,
                   #   userID: userID
+
+# *********** HEROKU SETTINGS *************
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+#DATABASES['default'] = dj_database_url.config()
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
+
