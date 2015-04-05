@@ -90,6 +90,9 @@ target/
 cdsenv
 cdsenv/*
 
+assets
+media
+
 #--------------- MacOSX
 
 .DS_Store
