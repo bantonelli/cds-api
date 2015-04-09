@@ -187,7 +187,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:4200',
-    'https://fierce-depths-3755.herokuapp.com',
+    'fierce-depths-3755.herokuapp.com',
     #'hostname.example.com'
 )
 
