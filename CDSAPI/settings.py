@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'CDSAPI.wsgi.application'
 # }
 
 #Below is HEROKU setup for database
-
+#
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -187,6 +187,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:4200',
+    'https://fierce-depths-3755.herokuapp.com',
     #'hostname.example.com'
 )
 
@@ -202,7 +203,7 @@ CORS_ALLOW_METHODS = (
 AUTH_USER_MODEL = 'useraccount.User'
 
 DJOSER = {
-    'DOMAIN': '127.0.0.1:4200',
+    'DOMAIN': 'https://fierce-depths-3755.herokuapp.com',
     'SITE_NAME': 'Custom Drum Samples',
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'ACTIVATION_URL': 'registration/activate/{uid}/{token}',
@@ -227,12 +228,6 @@ STRIPE_SECRET = 'sk_test_ONEo51glZMcLXv66UzPDWSru'
 
 #CSRF_COOKIE_NAME = 'mycsrftoken'
 # curl -X POST http://127.0.0.1:8000/api/custom-kits/purchase/ --data 'userID=1&kitName=NewCustomKit&samples=[1]'
-
-                  # stripeToken: response.id,
-                  #   last4: response.card.last4,
-                  #   samples: JSON.stringify(samples),
-                  #   kitName: kitName,
-                  #   userID: userID
 
 # *********** HEROKU SETTINGS *************
 # Parse database configuration from $DATABASE_URL
