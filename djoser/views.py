@@ -236,6 +236,9 @@ class ActivationView(utils.ActionViewMixin, generics.GenericAPIView):
         if serializer.user.is_suspended:
             data = {"user": ["The user account associated with this email is suspended!"]}
             return Response(data=data, status=status.HTTP_200_OK)
+        elif serializer.user.is_active:
+            data = {"user": ["The user account associated with this email is already activated!"]}
+            return Response(data=data, status=status.HTTP_200_OK)
         else:
             serializer.user.is_active = True
             serializer.user.save()
