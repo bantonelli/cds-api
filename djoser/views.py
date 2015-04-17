@@ -233,15 +233,19 @@ class ActivationView(utils.ActionViewMixin, generics.GenericAPIView):
     token_generator = default_token_generator
 
     def action(self, serializer):
-        serializer.user.is_active = True
-        serializer.user.save()
-        if settings.get('LOGIN_AFTER_ACTIVATION'):
-            token, _ = Token.objects.get_or_create(user=serializer.user)
-            data = serializers.TokenSerializer(token).data
+        if serializer.user.is_suspended:
+            data = {"user": ["The user account associated with this email is suspended!"]}
+            return Response(data=data, status=status.HTTP_200_OK)
         else:
-            # Make this send back user
-            data = {}
-        return Response(data=data, status=status.HTTP_200_OK)
+            serializer.user.is_active = True
+            serializer.user.save()
+            if settings.get('LOGIN_AFTER_ACTIVATION'):
+                token, _ = Token.objects.get_or_create(user=serializer.user)
+                data = serializers.TokenSerializer(token).data
+            else:
+                # Make this send back user
+                data = {}
+            return Response(data=data, status=status.HTTP_200_OK)
 
 
 class SetUsernameView(utils.ActionViewMixin, generics.GenericAPIView, OauthUserMixin):

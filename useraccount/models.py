@@ -57,6 +57,8 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=30)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_suspended = models.BooleanField(default=False)
+    suspension_reason = models.TextField(blank=True, null=True)
     temp_password = models.CharField(_('temp_password'), max_length=128, blank=True, null=True)
     temp_username = models.CharField(max_length=30, blank=True)
     temp_email = models.EmailField(
