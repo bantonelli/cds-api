@@ -4,6 +4,7 @@ import os
 from datetime import date
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from tinymce.models import HTMLField
 
 
 #-------------------------------------------------------------->
@@ -79,7 +80,7 @@ class VendorKit (CommonInfo):
     on_sale = models.BooleanField(default=False)
     soundcloud = models.CharField(max_length=500)
     image = models.FileField(upload_to=upload_vendor_kit_image, storage=OverwriteStorage())
-#    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
+    description = HTMLField(blank=True) # This should be a WYSIWYG field
     sample_count = models.IntegerField(blank=True, null=True)
     commission_rate = models.DecimalField(max_digits=10, decimal_places=2)
     vendor = models.ForeignKey(Vendor)

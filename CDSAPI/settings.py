@@ -47,7 +47,8 @@ INSTALLED_APPS = (
     'api',
     'provider',
     'provider.oauth2',
-    'corsheaders'
+    'corsheaders',
+    'tinymce',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -245,4 +246,12 @@ ALLOWED_HOSTS = ['*']
 # hosted at https://cryptic-harbor-4037.herokuapp.com/
 # Heroku remote at https://git.heroku.com/cryptic-harbor-4037.git
 
-
+TINYMCE_JS_URL = MEDIA_URL + "tinymce/tinymce.min.js"
+TINYMCE_DEFAULT_CONFIG = {
+    'plugins': "advlist autolink link image lists charmap print preview",
+    'theme': "modern",
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 10,
+}
+TINYMCE_SPELLCHECKER = False
+TINYMCE_COMPRESSOR = False
