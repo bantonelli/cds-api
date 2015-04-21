@@ -121,7 +121,7 @@ class Sample(models.Model):
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=2, choices=SAMPLE_TYPE_CHOICES)
     bpm = models.IntegerField(default=0)
-    #duration = models.TimeField() # add this field when updating to 1.8
+    duration = models.DurationField()  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
     preview = models.FileField(upload_to=upload_sample_preview, storage=OverwriteStorage())
     wav = models.FileField(upload_to=upload_sample_wav, storage=OverwriteStorage())
@@ -138,7 +138,7 @@ class KitBuilderPurchase(models.Model):
     name = models.CharField(max_length=100)
     date_purchased = models.DateField(auto_now_add=True)
     zip_file = models.FilePathField(blank=True, null=True, max_length=250)
-    samples = models.ManyToManyField(Sample, blank=True, null=True)
+    samples = models.ManyToManyField(Sample, blank=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_purchases')
 
     def __unicode__(self):
@@ -163,8 +163,8 @@ class KitBuilderTemplate(models.Model):
     public = models.BooleanField(default=False)
     image = models.FileField(upload_to=upload_template_image, storage=OverwriteStorage())
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
-    samples = models.ManyToManyField(Sample, blank=True, null=True)
-    tags = models.ManyToManyField(Tag, blank=True, null=True)
+    samples = models.ManyToManyField(Sample, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __unicode__(self):
         return self.name

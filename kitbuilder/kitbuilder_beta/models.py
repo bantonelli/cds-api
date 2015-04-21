@@ -1,7 +1,7 @@
 from django.db import models
 from userprofile.models import UserProfile
 import os
-from datetime import date
+from django.utils import timezone
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
@@ -62,7 +62,7 @@ class KitDescription (CommonInfo):
     selling_point3_title = models.CharField(max_length=50, blank=True)
     number_of_samples = models.IntegerField(default=0)
     author = models.CharField(max_length=50, blank=True)
-    date_created = models.DateField(default=date.today())
+    date_created = models.DateField(default=timezone.now)
 
 
 class Kit (CommonInfo):
@@ -120,8 +120,8 @@ class CustomKit(models.Model):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(UserProfile, related_name='custom_kits')
     date = models.DateField(auto_now_add=True)
-    samples = models.ManyToManyField(Sample, blank=True, null=True)
-    tags = models.ManyToManyField(Tag, blank=True, null=True)
+    samples = models.ManyToManyField(Sample, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
     zip_file = models.FilePathField(blank=True, null=True, max_length=200)
 
     def __unicode__(self):
