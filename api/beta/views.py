@@ -8,7 +8,7 @@ from rest_framework import generics, permissions
 from api.permissions import IsKitOwner, IsUser
 from serializers import *
 from provider.oauth2.models import AccessToken
-from kitbuilder.beta.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
+from kitbuilder.kitbuilder_beta.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
