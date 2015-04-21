@@ -92,12 +92,12 @@ class VendorKit (CommonInfo):
 # SAMPLE
 
 def upload_sample_preview(instance, filename):
-    kit_name = instance.kit.name.replace(" ", "_").replace("'", "")
+    kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
     return "vendor_kits/" + kit_name + "/samples/preview/" + filename
 
 
 def upload_sample_wav(instance, filename):
-    kit_name = instance.kit.name.replace(" ", "_").replace("'", "")
+    kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
     return "vendor_kits/" + kit_name + "/samples/wav/" + filename
 
 
