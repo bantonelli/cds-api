@@ -181,7 +181,7 @@ from django.dispatch.dispatcher import receiver
 @receiver(pre_delete, sender=Sample)
 def sample_delete(sender, instance, **kwargs):
     # Pass false so FileField doesn't save the model.
-    instance.demo.delete(False)
+    instance.preview.delete(False)
     instance.wav.delete(False)
 
 
