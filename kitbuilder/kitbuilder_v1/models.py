@@ -119,13 +119,13 @@ class Sample(models.Model):
         (LOOP, 'Loop'),
     )
     name = models.CharField(max_length=50)
-    type = models.CharField(max_length=2, choices=SAMPLE_TYPE_CHOICES)
-    bpm = models.IntegerField(default=0)
-    duration = models.DurationField()  # add this field when updating to 1.8
+    type = models.CharField(max_length=20, choices=SAMPLE_TYPE_CHOICES)
+    bpm = models.IntegerField(default=0, blank=True, null=True)
+    duration = models.DurationField(blank=True, null=True)  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
     preview = models.FileField(upload_to=upload_sample_preview, storage=OverwriteStorage())
     wav = models.FileField(upload_to=upload_sample_wav, storage=OverwriteStorage())
-    vendor_kit = models.ForeignKey(VendorKit, related_name="samples")
+    vendor_kit = models.ForeignKey(VendorKit, related_name="samples", blank=True)
 
     def __unicode__(self):
         return self.name

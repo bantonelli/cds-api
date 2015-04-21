@@ -22,7 +22,7 @@ class VendorKitAdmin(admin.ModelAdmin):
 
 
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'kit', 'type')
+    list_display = ('name', 'vendor_kit', 'type')
 
 
 admin.site.register(Price)
