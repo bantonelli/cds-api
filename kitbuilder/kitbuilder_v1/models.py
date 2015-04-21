@@ -125,7 +125,7 @@ class Sample(models.Model):
     key = models.CharField(max_length=10, blank=True, null=True)
     preview = models.FileField(upload_to=upload_sample_preview, storage=OverwriteStorage())
     wav = models.FileField(upload_to=upload_sample_wav, storage=OverwriteStorage())
-    vendor_kit = models.ForeignKey(VendorKit, related_name="samples", blank=True)
+    vendor_kit = models.ForeignKey(VendorKit, related_name="samples", blank=True, null=True)
 
     def __unicode__(self):
         return self.name
