@@ -125,7 +125,7 @@ class Sample(models.Model):
     key = models.CharField(max_length=10, blank=True, null=True)
     preview = models.FileField(upload_to=upload_sample_preview, storage=OverwriteStorage())
     wav = models.FileField(upload_to=upload_sample_wav, storage=OverwriteStorage())
-    vendor_kit = models.ForeignKey(VendorKit, related_name="samples", blank=True, null=True)
+    vendor_kit = models.ForeignKey(VendorKit, related_name="samples")
 
     def __unicode__(self):
         return self.name
@@ -210,3 +210,15 @@ def kitbuilder_template_delete(sender, instance, **kwargs):
 
 
 
+# DROP TABLE "kitbuilder_v1_kitbuildertemplate" CASCADE;
+# DROP TABLE "kitbuilder_v1_kitbuildertemplate_samples" CASCADE;
+# DROP TABLE "kitbuilder_v1_kitbuildertemplate_tags" CASCADE;
+# DROP TABLE "kitbuilder_v1_kitbuilderpurchase" CASCADE;
+# DROP TABLE "kitbuilder_v1_kitbuilderpurchase_samples" CASCADE;
+# DROP TABLE "kitbuilder_v1_sample" CASCADE;
+# DROP TABLE "kitbuilder_v1_vendorkit" CASCADE;
+# DROP TABLE "kitbuilder_v1_vendorkit_tags" CASCADE;
+# DROP TABLE "kitbuilder_v1_vendor" CASCADE;
+# DROP TABLE "kitbuilder_v1_tag" CASCADE;
+# DROP TABLE "kitbuilder_v1_sale" CASCADE;
+# DROP TABLE "kitbuilder_v1_price" CASCADE;

@@ -60,9 +60,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=50)),
-                ('type', models.CharField(max_length=2, choices=[(b'Kick', b'Kick'), (b'Snare', b'Snare'), (b'Clap', b'Clap'), (b'Overhead', b'Overhead'), (b'Percussion', b'Percussion'), (b'Sound FX', b'Sound FX'), (b'Loop', b'Loop')])),
-                ('bpm', models.IntegerField(default=0)),
-                ('duration', models.DurationField()),
+                ('type', models.CharField(max_length=20, choices=[(b'Kick', b'Kick'), (b'Snare', b'Snare'), (b'Clap', b'Clap'), (b'Overhead', b'Overhead'), (b'Percussion', b'Percussion'), (b'Sound FX', b'Sound FX'), (b'Loop', b'Loop')])),
+                ('bpm', models.IntegerField(default=0, null=True, blank=True)),
+                ('duration', models.DurationField(null=True, blank=True)),
                 ('key', models.CharField(max_length=10, null=True, blank=True)),
                 ('preview', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_sample_preview)),
                 ('wav', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_sample_wav)),
