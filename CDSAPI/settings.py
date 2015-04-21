@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'djoser',
     'kitbuilder',
+    'kitbuilder.kitbuilder_beta',
+    'kitbuilder.kitbuilder_v1',
     'useraccount',
     'userprofile',
     'api',

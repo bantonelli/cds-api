@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-from kitbuilder.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
+from kitbuilder.beta.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
 from userprofile.models import UserProfile
 
 
