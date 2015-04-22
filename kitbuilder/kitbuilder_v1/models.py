@@ -61,14 +61,15 @@ def upload_vendor_logo(instance, filename):
 
 
 def upload_vendor_kit_image(instance, filename):
+    vendor_name = instance.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.name.replace(" ", "_").replace("'", "")
-    return "vendor_kits/" + kit_name + "/" + filename
+    return "vendors/" + vendor_name + "/kits/" + kit_name + "/" + filename
 
 
 class Vendor(CommonInfo):
     website = models.URLField(blank=True, null=True)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
-    logo = models.FileField(upload_to=upload_vendor_kit_image, storage=OverwriteStorage())
+    logo = models.FileField(upload_to=upload_vendor_logo, storage=OverwriteStorage())
     facebook = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     google_plus = models.URLField(blank=True, null=True)
@@ -93,13 +94,15 @@ class VendorKit (CommonInfo):
 # SAMPLE
 
 def upload_sample_preview(instance, filename):
+    vendor_name = instance.vendor_kit.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
-    return "vendor_kits/" + kit_name + "/samples/preview/" + filename
+    return "vendors/" + vendor_name + "/kits/" + kit_name + "/samples/preview/" + filename
 
 
 def upload_sample_wav(instance, filename):
+    vendor_name = instance.vendor_kit.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
-    return "vendor_kits/" + kit_name + "/samples/wav/" + filename
+    return "vendors/" + vendor_name + "/kits/" + kit_name + "/samples/wav/" + filename
 
 
 class Sample(models.Model):
@@ -158,7 +161,7 @@ def upload_template_image(instance, filename):
 class KitBuilderTemplate(models.Model):
     name = models.CharField(max_length=100)
     last_updated = models.DateField(auto_now=True)
-    purchases = models.IntegerField(default=0)
+    times_sampled = models.IntegerField(default=0)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
