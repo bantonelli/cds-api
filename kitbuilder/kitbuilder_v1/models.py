@@ -161,7 +161,7 @@ def upload_template_image(instance, filename):
 class KitBuilderTemplate(models.Model):
     name = models.CharField(max_length=100)
     last_updated = models.DateField(auto_now=True)
-    times_sampled = models.IntegerField(default=0)
+    times_added = models.IntegerField(default=0)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
