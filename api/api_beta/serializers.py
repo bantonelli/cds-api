@@ -41,7 +41,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class KitSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     description = KitDescriptionSerializer(read_only=True)
     image = serializers.Field('image.url')
     tags = TagSerializer(read_only=True)

@@ -1,38 +1,11 @@
 __author__ = 'brandonantonelli'
-
+# from django.conf import settings
 from rest_framework import serializers
-from django.conf import settings
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-from kitbuilder.kitbuilder_beta.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit
-from userprofile.models import UserProfile
+from kitbuilder.kitbuilder_v1.models import Tag, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
 
 
-# KIT BUILDER
-class SampleDemoSerializer(serializers.ModelSerializer):
-    demo = serializers.Field('demo.url')
-
-    class Meta:
-        model = Sample
-        fields = ('id', 'name', 'demo', 'kit', 'type')
-
-
-class SampleSerializer(serializers.ModelSerializer):
-    demo = serializers.Field('demo.url')
-
-    class Meta:
-        model = Sample
-        fields = ('id', 'name', 'demo', 'wav', 'kit', 'type')
-
-
-class KitDescriptionSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = KitDescription
-        fields = ('id', 'selling_point1', 'selling_point2', 'selling_point3', 'selling_point1_title', 'selling_point2_title', 'selling_point3_title', 'number_of_samples', 'author', 'date_created')
-
-
+#-------------------------------------------------------------->
+# TAG
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -40,54 +13,71 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class KitSerializer(serializers.ModelSerializer):
+#-------------------------------------------------------------->
+# VENDOR
+class VendorSerializer(serializers.ModelSerializer):
+    logo = serializers.Field('logo.url')
+
+    class Meta:
+        model = Vendor
+        fields = ('id', 'name', 'website', 'logo', 'facebook', 'twitter', 'google_plus', 'soundcloud')
+
+
+#-------------------------------------------------------------->
+# VENDOR KIT
+class VendorKitSerializer(serializers.ModelSerializer):
     samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    description = KitDescriptionSerializer(read_only=True)
     image = serializers.Field('image.url')
     tags = TagSerializer(read_only=True)
 
     class Meta:
-        model = Kit
-        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'tags', 'description', 'price', 'sale', 'samples')
+        model = VendorKit
+        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'description', 'sample_count', 'commission_rate', 'vendor', 'tags', 'price', 'sale', 'samples')
 
 
-class CustomKitSerializer(serializers.ModelSerializer):
+#-------------------------------------------------------------->
+# SAMPLE SERIALIZERS
+class SamplePreviewSerializer(serializers.ModelSerializer):
+    preview = serializers.Field('preview.url')
+
+    class Meta:
+        model = Sample
+        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'preview', 'vendor_kit')
+
+
+class SampleSerializer(serializers.ModelSerializer):
+    wav = serializers.Field('wav.url')
+
+    class Meta:
+        model = Sample
+        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'wav', 'vendor_kit')
+
+
+#-------------------------------------------------------------->
+# KIT BUILDER PURCHASE
+class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
     samples = serializers.PrimaryKeyRelatedField(many=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
     tags = TagSerializer(read_only=True)
 
     class Meta:
-        model = CustomKit
-        fields = ('id', 'name', 'user', 'date', 'samples', 'tags')
+        model = KitBuilderPurchase
+        fields = ('id', 'name', 'date_purchased', 'zip_file', 'samples', 'user')
 
 
-class CustomKitPurchasedSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True)
+#-------------------------------------------------------------->
+# KIT BUILDER PURCHASE
+class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     user = serializers.CharField(read_only=True, source='user.user.username')
+    samples = serializers.PrimaryKeyRelatedField(many=True)
     tags = TagSerializer(read_only=True)
 
     class Meta:
-        model = CustomKit
-        fields = ('id', 'name', 'user', 'date', 'samples', 'tags', 'zip_file')
+        model = KitBuilderTemplate
+        fields = ('id', 'name', 'last_updated', 'times_added', 'featured', 'public', 'image', 'user', 'samples', 'tags')
 
 
-#USER PROFILE
-class UserProfilePrivateSerializer(serializers.ModelSerializer):
-    # Needs Object level permission
-    custom_kits = CustomKitPurchasedSerializer(many=True)
 
-    class Meta:
-        model = UserProfile
-        fields = ('id', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'custom_kits')
-
-
-class UserProfilePublicSerializer(serializers.ModelSerializer):
-    custom_kits = CustomKitPurchasedSerializer(many=True, read_only=True)
-    username = serializers.Field()
-
-    class Meta:
-        model = UserProfile
-        fields = ('id', 'username', 'created_at', 'updated_at', 'custom_kits')
 
 
 
