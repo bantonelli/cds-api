@@ -10,8 +10,8 @@ from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
-from kitbuilder.kitbuilder_v1.models import Sample, KitBuilderPurchase
-from userprofile.models import UserProfile
+from .kitbuilder.views import Sample, KitBuilderPurchase
+from .userprofile.views import UserProfile
 # from provider.oauth2.models import AccessToken
 # from django.views.decorators.csrf import csrf_exempt
 # from django.utils.decorators import method_decorator
