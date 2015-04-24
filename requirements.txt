@@ -4,6 +4,7 @@ Django==1.8
 django-braces==1.4.0
 django-cors-headers==1.0.0
 django-oauth2-provider==0.2.6.1
+django-tinymce==1.5.3
 django-toolbelt==0.0.1
 djangorestframework==2.4.4
 djoser==0.1.0
