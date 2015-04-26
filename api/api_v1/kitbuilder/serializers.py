@@ -69,9 +69,7 @@ class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
 # KIT BUILDER PURCHASE
 class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     user = serializers.CharField(read_only=True, source='user.user.username')
-    samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    tags = TagSerializer(read_only=True)
-    image = serializers.FileField(required=False, max_length=None, allow_empty_file=True, use_url=False)
+    image = serializers.FileField(allow_empty_file=True, required=False, max_length=None, use_url=True)
 
     def create(self, validated_data):
         return KitBuilderTemplate.objects.create(**validated_data)
@@ -79,8 +77,7 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = KitBuilderTemplate
         fields = ('id', 'name', 'last_updated', 'times_added', 'featured', 'public', 'image', 'user', 'samples', 'tags')
-
-
+        read_only_fields = ('times_added', 'last_updated', 'featured',)
 
 
 

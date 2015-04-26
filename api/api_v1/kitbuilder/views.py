@@ -3,11 +3,12 @@ from django.core.mail import send_mail, EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser, MultiPartParser
 from api.permissions import IsKitOwner, IsUser
 from serializers import *
 from kitbuilder.kitbuilder_v1.models import Sale, Tag, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
 from userprofile.models import UserProfile
-from djoser.utils import ActionViewMixin, SendEmailViewMixin
+from djoser.utils import RetrieveActionViewMixin, ActionViewMixin, SendEmailViewMixin
 from djoser.views import OauthUserMixin
 
 
@@ -91,8 +92,21 @@ class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
+class KitBuilderTemplateDetail(generics.RetrieveAPIView, RetrieveActionViewMixin):
     permission_classes = (permissions.IsAuthenticated, IsKitOwner, )
-    required_scopes = ['read']
-    queryset = KitBuilderTemplate.objects.all()
     serializer_class = KitBuilderTemplateSerializer
+    queryset = KitBuilderTemplate.objects.all()
+    # required_scopes = ['read']
+    parser_classes = (MultiPartParser,)
+
+    def action(self, serializer, pk):
+        template = KitBuilderTemplate.objects.get(id=pk)
+        template.name = serializer.validated_data.get('name', template.name)
+        template.times_added = serializer.validated_data.get('times_added', template.times_added)
+        template.public = serializer.validated_data.get('public', template.public)
+        template.image = serializer.validated_data.get('image', template.image)
+        template.samples = serializer.validated_data.get('samples', template.samples)
+        template.tags = serializer.validated_data.get('tags', template.tags)
+        template.save()
+        #data = {"template_updated": True}
+        return Response(status=status.HTTP_200_OK)

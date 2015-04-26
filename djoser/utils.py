@@ -42,9 +42,26 @@ class ActionViewMixin(object):
     # that triggers the main action of the view.
         # Main action of the view could be
     def post(self, request):
-        serializer = self.get_serializer(data=request.DATA)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             return self.action(serializer)
+        else:
+            return response.Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class RetrieveActionViewMixin(object):
+
+    # Basically This mixin defines a POST method handler
+    # that triggers the main action of the view.
+        # Main action of the view could be
+    def post(self, request, pk):
+        current_object = self.get_object()
+        serializer = self.get_serializer(current_object, data=request.data, partial=True)
+        if serializer.is_valid():
+            return self.action(serializer, pk)
         else:
             return response.Response(
                 data=serializer.errors,
