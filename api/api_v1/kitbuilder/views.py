@@ -69,24 +69,26 @@ class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
     queryset = KitBuilderTemplate.objects.all()
     serializer_class = KitBuilderTemplateSerializer
 
+# Grabs the user
+# Use the OAuth User mixin for this
+# checks the user's list of KitBuilderTemplates
+# If the KitBuilderTemplate that they have already exists return an error
+# If not create it and return a success message.
     def create(self, request, *args, **kwargs):
-        # data = request.DATA
-        # user = User(
-        #     profit_and_loss=data['component_comments'],
-        #     name=data['name']
-        # )
-        # user.clean()
-        # user.save()
-        #
-        # UserProfile.objects.create(
-        #     user=user,
-        #     name=data['profile']['name']
-        # )
-        #
-        # serializer = UserSerializer(user)
-        # headers = self.get_success_headers(serializer.data)
-        data = {"Template Created": True}
-        return Response(data=data, status=status.HTTP_201_CREATED)
+        serializer = KitBuilderTemplateSerializer(data=request.data)
+        user = self.get_current_user(request)
+        if serializer.is_valid():
+            template_name = request.data['name']
+            if user is not None:
+                users_templates = user.profile.kitbuilder_templates.all()
+                if users_templates.filter(name=template_name).exists():
+                    data = {"template_created": False, "data_error": "You already have a kitbuilder template with that name!"}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    serializer.save(user=user.profile)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):

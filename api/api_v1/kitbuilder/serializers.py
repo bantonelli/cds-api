@@ -16,7 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # VENDOR
 class VendorSerializer(serializers.ModelSerializer):
-    logo = serializers.Field('logo.url')
+    logo = serializers.ReadOnlyField(source='logo.url')
 
     class Meta:
         model = Vendor
@@ -27,7 +27,7 @@ class VendorSerializer(serializers.ModelSerializer):
 # VENDOR KIT
 class VendorKitSerializer(serializers.ModelSerializer):
     samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    image = serializers.Field('image.url')
+    image = serializers.ReadOnlyField(source='image.url')
     tags = TagSerializer(read_only=True)
 
     class Meta:
@@ -38,7 +38,7 @@ class VendorKitSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # SAMPLE SERIALIZERS
 class SamplePreviewSerializer(serializers.ModelSerializer):
-    preview = serializers.Field('preview.url')
+    preview = serializers.ReadOnlyField(source='preview.url')
 
     class Meta:
         model = Sample
@@ -46,7 +46,7 @@ class SamplePreviewSerializer(serializers.ModelSerializer):
 
 
 class SampleSerializer(serializers.ModelSerializer):
-    wav = serializers.Field('wav.url')
+    wav = serializers.ReadOnlyField(source='wav.url')
 
     class Meta:
         model = Sample
@@ -56,7 +56,7 @@ class SampleSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # KIT BUILDER PURCHASE
 class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True)
+    samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
     tags = TagSerializer(read_only=True)
 
@@ -69,8 +69,12 @@ class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
 # KIT BUILDER PURCHASE
 class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     user = serializers.CharField(read_only=True, source='user.user.username')
-    samples = serializers.PrimaryKeyRelatedField(many=True)
+    samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     tags = TagSerializer(read_only=True)
+    image = serializers.FileField(required=False, max_length=None, allow_empty_file=True, use_url=False)
+
+    def create(self, validated_data):
+        return KitBuilderTemplate.objects.create(**validated_data)
 
     class Meta:
         model = KitBuilderTemplate

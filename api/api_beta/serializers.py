@@ -11,7 +11,8 @@ from userprofile.models import UserProfile
 
 # KIT BUILDER
 class SampleDemoSerializer(serializers.ModelSerializer):
-    demo = serializers.Field('demo.url')
+    #demo = serializers.Field('demo.url')
+    demo = serializers.ReadOnlyField(source='demo.url')
 
     class Meta:
         model = Sample
@@ -19,7 +20,7 @@ class SampleDemoSerializer(serializers.ModelSerializer):
 
 
 class SampleSerializer(serializers.ModelSerializer):
-    demo = serializers.Field('demo.url')
+    demo = serializers.ReadOnlyField(source='demo.url')
 
     class Meta:
         model = Sample
@@ -43,7 +44,8 @@ class TagSerializer(serializers.ModelSerializer):
 class KitSerializer(serializers.ModelSerializer):
     #samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     description = KitDescriptionSerializer(read_only=True)
-    image = serializers.Field('image.url')
+    #image = serializers.Field('image.url')
+    image = serializers.ReadOnlyField(source='image.url')
     tags = TagSerializer(read_only=True)
 
     class Meta:
@@ -52,7 +54,7 @@ class KitSerializer(serializers.ModelSerializer):
 
 
 class CustomKitSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True)
+    samples = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
     tags = TagSerializer(read_only=True)
 
@@ -62,7 +64,7 @@ class CustomKitSerializer(serializers.ModelSerializer):
 
 
 class CustomKitPurchasedSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True)
+    samples = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
     tags = TagSerializer(read_only=True)
 
@@ -83,7 +85,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):
     custom_kits = CustomKitPurchasedSerializer(many=True, read_only=True)
-    username = serializers.Field()
+    username = serializers.ReadOnlyField()
 
     class Meta:
         model = UserProfile
