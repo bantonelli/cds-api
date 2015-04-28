@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser, MultiPartParser
-from api.permissions import IsKitOwner, IsUser
+from api.permissions import IsTemplateOwner, IsKitOwner, IsUserProfileOwner
 from serializers import *
 from kitbuilder.kitbuilder_v1.models import Sale, Tag, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
 from userprofile.models import UserProfile
@@ -92,21 +92,20 @@ class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class KitBuilderTemplateDetail(generics.RetrieveAPIView, RetrieveActionViewMixin):
-    permission_classes = (permissions.IsAuthenticated, IsKitOwner, )
+class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTemplateOwner, )
     serializer_class = KitBuilderTemplateSerializer
     queryset = KitBuilderTemplate.objects.all()
     # required_scopes = ['read']
-    parser_classes = (MultiPartParser,)
+    parser_classes = (JSONParser, MultiPartParser,)
 
-    def action(self, serializer, pk):
-        template = KitBuilderTemplate.objects.get(id=pk)
-        template.name = serializer.validated_data.get('name', template.name)
-        template.times_added = serializer.validated_data.get('times_added', template.times_added)
-        template.public = serializer.validated_data.get('public', template.public)
-        template.image = serializer.validated_data.get('image', template.image)
-        template.samples = serializer.validated_data.get('samples', template.samples)
-        template.tags = serializer.validated_data.get('tags', template.tags)
-        template.save()
-        #data = {"template_updated": True}
-        return Response(status=status.HTTP_200_OK)
+    # This updates the KitBuilder Template
+    # If you send a put request you need to include all of the fields
+    # If you send a patch request you can do a partial update to the model
+    # Also has Object level permission using the IsTemplateOwner Permission
+
+    # def get_serializer(self, instance=None, data=None, partial=False):
+    #     if self.request.method == 'PUT':
+    #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=True)
+    #     else:
+    #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=partial)

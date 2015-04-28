@@ -12,16 +12,45 @@ class IsKitOwner(permissions.BasePermission):
         return obj.user == request.user.profile
 
 
-class IsUser(permissions.BasePermission):
+class IsTemplateOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        template_id = obj.id
+        if request.user:
+            user = request.user
+            users_templates = user.profile.kitbuilder_templates.all()
+            if users_templates.filter(id=template_id).exists():
+                return True
+            else:
+                return False
+        #elif request.META['Authorization']:
+        else:
+            auth_header = request.META.get('Authorization')
+            if auth_header is not None:
+                index = auth_header.find('Bearer') + 7
+                token_string = auth_header[index:]
+                token = AccessToken.objects.get_token(token=token_string)
+                user = token.user
+                users_templates = user.profile.kitbuilder_templates.all()
+                if users_templates.filter(id=template_id).exists():
+                    return True
+                else:
+                    return False
+            return False
+
+
+class IsUserProfileOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user:
             return obj == request.user.profile
         #elif request.META['Authorization']:
         else:
-            auth_header = request.META['Authorization']
-            index = auth_header.find('Bearer') + 7
-            token_string = auth_header[index:]
-            token = AccessToken.objects.get_token(token=token_string)
-            user = token.user
-            return obj == user.profile
+            auth_header = request.META.get('Authorization')
+            if auth_header is not None:
+                index = auth_header.find('Bearer') + 7
+                token_string = auth_header[index:]
+                token = AccessToken.objects.get_token(token=token_string)
+                user = token.user
+                return obj == user.profile
+            return False

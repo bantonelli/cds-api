@@ -68,11 +68,21 @@ class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # KIT BUILDER PURCHASE
 class KitBuilderTemplateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
     user = serializers.CharField(read_only=True, source='user.user.username')
-    image = serializers.ImageField(allow_empty_file=True, required=False, max_length=None, use_url=True)
+    image = serializers.ImageField(allow_empty_file=True, required=False, max_length=None)
 
     def create(self, validated_data):
         return KitBuilderTemplate.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.public = validated_data.get('public', instance.public)
+        instance.image = validated_data.get('image', instance.image)
+        instance.samples = validated_data.get('samples', instance.samples)
+        instance.tags = validated_data.get('tags', instance.tags)
+        instance.save()
+        return instance
 
     class Meta:
         model = KitBuilderTemplate

@@ -5,7 +5,7 @@ import ast
 import cgi
 
 from rest_framework import generics, permissions
-from api.permissions import IsKitOwner, IsUser
+from api.permissions import IsKitOwner
 from serializers import *
 from provider.oauth2.models import AccessToken
 from kitbuilder.kitbuilder_beta.models import Sale, Tag, KitDescription, Kit, Sample, CustomKit

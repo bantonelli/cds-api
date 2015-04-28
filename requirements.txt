@@ -14,6 +14,7 @@ gunicorn==19.3.0
 httplib2==0.9.1
 oauth2==1.5.211
 oauthlib==0.7.2
+Pillow==2.8.1
 psycopg2==2.5.4
 py-bcrypt==0.4
 requests==2.5.1
