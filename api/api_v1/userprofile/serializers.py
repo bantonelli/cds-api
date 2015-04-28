@@ -15,10 +15,10 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):
-    kitbuilder_templates = KitBuilderTemplateSerializer(many=True, read_only=True)
+    public_kitbuilder_templates = KitBuilderTemplateSerializer(many=True, read_only=True)
     # Need username available here because the useraccount will not be available when the public serializer is in use.
     username = serializers.ReadOnlyField()
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'created_at', 'updated_at', 'kitbuilder_templates')
+        fields = ('id', 'username', 'created_at', 'updated_at', 'public_kitbuilder_templates')

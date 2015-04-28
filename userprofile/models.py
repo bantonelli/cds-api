@@ -22,8 +22,13 @@ class UserProfile(models.Model):
         # through a user's profile
         return self.user.username
 
+    @property
+    def public_kitbuilder_templates(self):
+        return self.kitbuilder_templates.filter(public=True)
+
     def __unicode__(self):
         return self.user.username
+
 
 User.get_or_create_profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
