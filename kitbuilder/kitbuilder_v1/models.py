@@ -163,7 +163,7 @@ class KitBuilderTemplate(models.Model):
     name = models.CharField(max_length=100)
     last_updated = models.DateField(auto_now=True)
     times_added = models.IntegerField(default=0)
-#    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
+    description = models.TextField(blank=True)
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
     image = models.ImageField(upload_to=upload_template_image, storage=OverwriteStorage(), blank=True, null=True)
