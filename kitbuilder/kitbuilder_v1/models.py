@@ -69,7 +69,7 @@ def upload_vendor_kit_image(instance, filename):
 class Vendor(CommonInfo):
     website = models.URLField(blank=True, null=True)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
-    logo = models.FileField(upload_to=upload_vendor_logo, storage=OverwriteStorage())
+    logo = models.ImageField(upload_to=upload_vendor_logo, storage=OverwriteStorage())
     facebook = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     google_plus = models.URLField(blank=True, null=True)
@@ -80,7 +80,7 @@ class VendorKit (CommonInfo):
     active = models.BooleanField(default=True)
     on_sale = models.BooleanField(default=False)
     soundcloud = models.CharField(max_length=500)
-    image = models.FileField(upload_to=upload_vendor_kit_image, storage=OverwriteStorage())
+    image = models.ImageField(upload_to=upload_vendor_kit_image, storage=OverwriteStorage())
     description = HTMLField(blank=True) # This should be a WYSIWYG field
     sample_count = models.IntegerField(blank=True, null=True)
     commission_rate = models.DecimalField(max_digits=10, decimal_places=2)
@@ -165,7 +165,7 @@ class KitBuilderTemplate(models.Model):
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
-    image = models.FileField(upload_to=upload_template_image, storage=OverwriteStorage())
+    image = models.ImageField(upload_to=upload_template_image, storage=OverwriteStorage(), blank=True, null=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
