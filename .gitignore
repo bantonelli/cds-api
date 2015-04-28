@@ -91,7 +91,10 @@ cdsenv
 cdsenv/*
 
 assets
-media
+media/custom_kits
+media/kits
+media/kb_templates
+media/vendors
 
 #--------------- MacOSX
 
