@@ -15,8 +15,8 @@ from djoser.views import OauthUserMixin
 
 ########### API VIEWS
 
-
-#SOUND SAMPLE
+#-------------------------------------------------------------->
+# SAMPLE VIEWS
 class SamplePreviewList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     required_scopes = ['read']
@@ -31,7 +31,17 @@ class SamplePreviewDetail(generics.RetrieveAPIView):
     serializer_class = SamplePreviewSerializer
 
 
-#SAMPLE KIT
+#-------------------------------------------------------------->
+# VENDOR VIEWS
+class VendorList(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    required_scopes = ['read']
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+
+
+#-------------------------------------------------------------->
+# VENDOR KIT VIEWS
 class VendorKitList(generics.ListAPIView):
     """
     List all Drum Kits
@@ -64,10 +74,12 @@ class KitBuilderPurchaseDetail(generics.RetrieveDestroyAPIView):
     serializer_class = KitBuilderPurchaseSerializer
 
 
+#-------------------------------------------------------------->
+# KIT BUILDER TEMPLATE VIEWS
 class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
     permission_classes = (permissions.IsAuthenticated, )
     required_scopes = ['read']
-    queryset = KitBuilderTemplate.objects.all()
+    queryset = KitBuilderTemplate.objects.filter(public=True)
     serializer_class = KitBuilderTemplateSerializer
 
 # Grabs the user
