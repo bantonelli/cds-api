@@ -69,7 +69,7 @@ class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
 # KIT BUILDER PURCHASE
 class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     user = serializers.CharField(read_only=True, source='user.user.username')
-    image = serializers.FileField(allow_empty_file=True, required=False, max_length=None, use_url=True)
+    image = serializers.ImageField(allow_empty_file=True, required=False, max_length=None, use_url=True)
 
     def create(self, validated_data):
         return KitBuilderTemplate.objects.create(**validated_data)

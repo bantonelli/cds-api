@@ -154,8 +154,9 @@ class KitBuilderPurchase(models.Model):
 
 def upload_template_image(instance, filename):
     user_dir = "user_"+str(instance.user.id)
-    template_name = instance.name.replace(" ", "_").replace("'", "")
-    return "kb_templates/" + user_dir + "/" + template_name + "/" + filename
+    #template_name = instance.name.replace(" ", "_").replace("'", "")
+    template_id = instance.id
+    return "kb_templates/" + user_dir + "/" + template_id + "/" + filename
 
 
 class KitBuilderTemplate(models.Model):
