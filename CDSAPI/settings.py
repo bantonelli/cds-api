@@ -248,7 +248,7 @@ ALLOWED_HOSTS = ['*']
 
 TINYMCE_JS_URL = MEDIA_URL + "tinymce/tinymce.min.js"
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "advlist autolink link image lists charmap print preview table",
+    'plugins': "advlist autolink lists link image charmap print preview hr anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template paste textcolor colorpicker textpattern",
     'theme': "modern",
     'cleanup_on_startup': True,
     'custom_undo_redo_levels': 10,
