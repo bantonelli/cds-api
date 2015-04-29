@@ -85,8 +85,9 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
             user=user,
             name=name,
             public=public,
-            image=image,
         )
+        template.save()
+        template.image = image
         template.save()
         for tag in tags:
             template.tags.add(tag)
