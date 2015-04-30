@@ -225,15 +225,15 @@ AWS_IS_GZIPPED = False
 #-------------------------------------------------------------->
 # MEDIA FILE STORAGE SETTINGS
 # Use Amazon S3 for storage for uploaded media files.
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
-MEDIA_URL = 'http://%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+import custom_storages
+DEFAULT_FILE_STORAGE = "custom_storages.MediaStorage"
+MEDIA_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.MEDIAFILES_LOCATION)
 
 
 #-------------------------------------------------------------->
 # STATIC FILE STORAGE SETTINGS
 # Use Amazon S3 for static files storage.
-import custom_storages
-STATIC_ROOT = os.path.join(BASE_DIR, "assets")
+STATIC_ROOT = ""
 STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.STATICFILES_LOCATION)
 

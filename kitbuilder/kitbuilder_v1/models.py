@@ -57,8 +57,8 @@ class Tag(models.Model):
 
 def upload_vendor_logo(instance, filename):
     vendor_name = instance.name.replace(" ", "_").replace("'", "")
-    return settings.MEDIA_URL + "vendors/" + vendor_name + "/logo/" + filename
-
+    # return "vendors/" + vendor_name + "/logo/" + filename
+    return settings.MEDIA_URL + filename
 
 def upload_vendor_kit_image(instance, filename):
     vendor_name = instance.vendor.name.replace(" ", "_").replace("'", "")
