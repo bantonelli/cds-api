@@ -96,6 +96,8 @@ media/kits
 media/kb_templates
 media/vendors
 
+CDSAPI/local_settings.py
+
 #--------------- MacOSX
 
 .DS_Store

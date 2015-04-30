@@ -1,1 +1,1 @@
-web: gunicorn CDSAPI.wsgi --log-file -
+web: waitress-serve --port=$PORT CDSAPI.wsgi:application
