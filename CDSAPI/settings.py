@@ -47,7 +47,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    # 'sslify.middleware.SSLifyMiddleware',
+    'sslify.middleware.SSLifyMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -231,7 +231,7 @@ AWS_IS_GZIPPED = False
 # Use Amazon S3 for storage for uploaded media files.
 import custom_storages
 DEFAULT_FILE_STORAGE = "custom_storages.MediaStorage"
-MEDIA_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.MEDIAFILES_LOCATION)
+MEDIA_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.MEDIAFILES_LOCATION)
 
 
 #-------------------------------------------------------------->
@@ -239,7 +239,7 @@ MEDIA_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_
 # Use Amazon S3 for static files storage.
 STATIC_ROOT = ""
 STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.STATICFILES_LOCATION)
+STATIC_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.STATICFILES_LOCATION)
 
 
 #-------------------------------------------------------------->
