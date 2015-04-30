@@ -96,6 +96,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+DEBUG = True
+
+TEMPLATE_DEBUG = DEBUG
+
 #-------------------------------------------------------------->
 # TEMPLATE/STATIC FILE FINDERS AND DIRECTORIES
 # List of finder classes that know how to find static files in
