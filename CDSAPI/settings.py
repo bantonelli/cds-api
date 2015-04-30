@@ -67,19 +67,19 @@ WSGI_APPLICATION = 'CDSAPI.wsgi.application'
 # DATABASE SETTINGS
 
 #Below is HEROKU setup for database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-#         'NAME': 'd7pajl538fmet1',                      # Or path to database file if using sqlite3.
-#         # The following settings are not used with sqlite3:
-#         'USER': 'lhozmsincrgdwf',
-#         'PASSWORD': '60-_sD2L9K3TjJLIrLocDBx7J8',
-#         'HOST': 'ec2-174-129-197-200.compute-1.amazonaws.com',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-#         'PORT': '5432',                      # Set to empty string for default.
-#     }
-# }
-import dj_database_url
-DATABASES = {'default': dj_database_url.config(default='postgres://lhozmsincrgdwf:60-_sD2L9K3TjJLIrLocDBx7J8@ec2-174-129-197-200.compute-1.amazonaws.com:5432/d7pajl538fmet1')}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'd7pajl538fmet1',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'lhozmsincrgdwf',
+        'PASSWORD': '60-_sD2L9K3TjJLIrLocDBx7J8',
+        'HOST': 'ec2-174-129-197-200.compute-1.amazonaws.com',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '5432',                      # Set to empty string for default.
+    }
+}
+# import dj_database_url
+# DATABASES = {'default': dj_database_url.config(default='postgres://lhozmsincrgdwf:60-_sD2L9K3TjJLIrLocDBx7J8@ec2-174-129-197-200.compute-1.amazonaws.com:5432/d7pajl538fmet1')}
 
 
 #-------------------------------------------------------------->
