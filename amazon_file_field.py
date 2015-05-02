@@ -16,6 +16,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from django.core.files.storage import FileSystemStorage
 from django.core.files import File
+from custom_storages import MediaStorage
 import os
 
 class S3Storage(FileSystemStorage):

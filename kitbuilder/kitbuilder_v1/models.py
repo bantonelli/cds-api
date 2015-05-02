@@ -58,8 +58,7 @@ class Tag(models.Model):
 
 def upload_vendor_logo(instance, filename):
     vendor_name = instance.name.replace(" ", "_").replace("'", "")
-    # return "vendors/" + vendor_name + "/logo/" + filename
-    return settings.MEDIA_URL + filename
+    return "media/vendors/" + vendor_name + "/logo/" + filename
 
 def upload_vendor_kit_image(instance, filename):
     vendor_name = instance.vendor.name.replace(" ", "_").replace("'", "")
@@ -70,7 +69,7 @@ def upload_vendor_kit_image(instance, filename):
 class Vendor(CommonInfo):
     website = models.URLField(blank=True, null=True)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
-    logo = S3EnabledImageField()
+    logo = S3EnabledImageField(upload_to=upload_vendor_logo)
     facebook = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     google_plus = models.URLField(blank=True, null=True)
