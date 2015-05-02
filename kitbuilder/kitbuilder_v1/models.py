@@ -5,6 +5,7 @@ from datetime import date
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from tinymce.models import HTMLField
+from amazon_file_field import S3EnabledFileField, S3EnabledImageField
 
 
 #-------------------------------------------------------------->
@@ -69,7 +70,7 @@ def upload_vendor_kit_image(instance, filename):
 class Vendor(CommonInfo):
     website = models.URLField(blank=True, null=True)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
-    logo = models.ImageField(upload_to=upload_vendor_logo, storage=OverwriteStorage())
+    logo = S3EnabledImageField()
     facebook = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     google_plus = models.URLField(blank=True, null=True)

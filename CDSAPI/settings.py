@@ -202,6 +202,7 @@ ALLOWED_HOSTS = ['*']
 
 #-------------------------------------------------------------->
 # AMAZON S3 SETTINGS
+USE_AMAZON_S3 = True
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "")
@@ -275,7 +276,7 @@ LOGGING = {
 
 #-------------------------------------------------------------->
 # SSL/SSLIFY SETTINGS
-SSLIFY_DISABLE = False
+SSLIFY_DISABLE = True
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
