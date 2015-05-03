@@ -231,7 +231,8 @@ AWS_IS_GZIPPED = False
 # MEDIA FILE STORAGE SETTINGS
 # Use Amazon S3 for storage for uploaded media files.
 import custom_storages
-DEFAULT_FILE_STORAGE = "custom_storages.MediaStorage"
+# DEFAULT_FILE_STORAGE = "custom_storages.MediaStorage" --> Using the storage in amazon_file_field module
+# MEDIA_ROOT = 'media'
 MEDIA_URL = 'https://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, custom_storages.MEDIAFILES_LOCATION)
 
 

@@ -63,7 +63,7 @@ def upload_vendor_logo(instance, filename):
 def upload_vendor_kit_image(instance, filename):
     vendor_name = instance.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.name.replace(" ", "_").replace("'", "")
-    return "vendors/" + vendor_name + "/kits/" + kit_name + "/" + filename
+    return "media/vendors/" + vendor_name + "/kits/" + kit_name + "/" + filename
 
 
 class Vendor(CommonInfo):
@@ -80,7 +80,7 @@ class VendorKit (CommonInfo):
     active = models.BooleanField(default=True)
     on_sale = models.BooleanField(default=False)
     soundcloud = models.CharField(max_length=500)
-    image = models.ImageField(upload_to=upload_vendor_kit_image, storage=OverwriteStorage())
+    image = S3EnabledImageField(upload_to=upload_vendor_kit_image)
     description = HTMLField(blank=True) # This should be a WYSIWYG field
     sample_count = models.IntegerField(blank=True, null=True)
     commission_rate = models.DecimalField(max_digits=10, decimal_places=2)
@@ -96,13 +96,13 @@ class VendorKit (CommonInfo):
 def upload_sample_preview(instance, filename):
     vendor_name = instance.vendor_kit.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
-    return "vendors/" + vendor_name + "/kits/" + kit_name + "/samples/preview/" + filename
+    return "media/vendors/" + vendor_name + "/kits/" + kit_name + "/samples/preview/" + filename
 
 
 def upload_sample_wav(instance, filename):
     vendor_name = instance.vendor_kit.vendor.name.replace(" ", "_").replace("'", "")
     kit_name = instance.vendor_kit.name.replace(" ", "_").replace("'", "")
-    return "vendors/" + vendor_name + "/kits/" + kit_name + "/samples/wav/" + filename
+    return "media/vendors/" + vendor_name + "/kits/" + kit_name + "/samples/wav/" + filename
 
 
 class Sample(models.Model):
@@ -127,8 +127,8 @@ class Sample(models.Model):
     bpm = models.IntegerField(default=0, blank=True, null=True)
     duration = models.DurationField(blank=True, null=True)  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
-    preview = models.FileField(upload_to=upload_sample_preview, storage=OverwriteStorage())
-    wav = models.FileField(upload_to=upload_sample_wav, storage=OverwriteStorage())
+    preview = S3EnabledFileField(upload_to=upload_sample_preview)
+    wav = S3EnabledFileField(upload_to=upload_sample_wav)
     vendor_kit = models.ForeignKey(VendorKit, related_name="samples")
 
     def __unicode__(self):
@@ -156,7 +156,7 @@ def upload_template_image(instance, filename):
     user_dir = "user_"+str(instance.user.id)
     #template_name = instance.name.replace(" ", "_").replace("'", "")
     template_id = instance.id
-    return "kb_templates/" + user_dir + "/" + str(template_id) + "/" + filename
+    return "media/kb_templates/" + user_dir + "/" + str(template_id) + "/" + filename
 
 
 class KitBuilderTemplate(models.Model):
@@ -166,7 +166,7 @@ class KitBuilderTemplate(models.Model):
     description = models.TextField(blank=True)
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
-    image = models.ImageField(upload_to=upload_template_image, storage=OverwriteStorage(), blank=True, null=True)
+    image = S3EnabledImageField(upload_to=upload_template_image, blank=True, null=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
