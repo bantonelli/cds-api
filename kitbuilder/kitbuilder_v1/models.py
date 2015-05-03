@@ -127,8 +127,10 @@ class Sample(models.Model):
     bpm = models.IntegerField(default=0, blank=True, null=True)
     duration = models.DurationField(blank=True, null=True)  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
-    preview = S3EnabledFileField(upload_to=upload_sample_preview)
-    wav = S3EnabledFileField(upload_to=upload_sample_wav)
+    # preview = S3EnabledFileField(upload_to=upload_sample_preview)
+    # wav = S3EnabledFileField(upload_to=upload_sample_wav)
+    preview = models.URLField(max_length=500)
+    wav = models.URLField(max_length=500)
     vendor_kit = models.ForeignKey(VendorKit, related_name="samples")
 
     def __unicode__(self):
@@ -141,7 +143,7 @@ class Sample(models.Model):
 class KitBuilderPurchase(models.Model):
     name = models.CharField(max_length=100)
     date_purchased = models.DateField(auto_now_add=True)
-    zip_file = models.FilePathField(blank=True, null=True, max_length=250)
+    zip_file = models.FilePathField(blank=True, null=True, max_length=250) # Change this to URL FIELD and ADD COMPUTED PROPERTY
     samples = models.ManyToManyField(Sample, blank=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_purchases')
 
