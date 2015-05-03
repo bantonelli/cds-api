@@ -38,7 +38,7 @@ class VendorKitSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # SAMPLE SERIALIZERS
 class SamplePreviewSerializer(serializers.ModelSerializer):
-    preview = serializers.ReadOnlyField(source='preview.url')
+    # preview = serializers.ReadOnlyField(source='preview.url')
 
     class Meta:
         model = Sample
@@ -46,7 +46,7 @@ class SamplePreviewSerializer(serializers.ModelSerializer):
 
 
 class SampleSerializer(serializers.ModelSerializer):
-    wav = serializers.ReadOnlyField(source='wav.url')
+    # wav = serializers.ReadOnlyField(source='wav.url')
 
     class Meta:
         model = Sample
