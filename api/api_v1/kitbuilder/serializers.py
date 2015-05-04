@@ -42,7 +42,7 @@ class SamplePreviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sample
-        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'preview', 'vendor_kit')
+        fields = ('id', 'name', 'type', 'bpm', 'key', 'preview', 'vendor_kit')
 
 
 class SampleSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class SampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sample
-        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'wav', 'vendor_kit')
+        fields = ('id', 'name', 'type', 'bpm', 'key', 'wav', 'vendor_kit')
 
 
 #-------------------------------------------------------------->
