@@ -107,3 +107,6 @@ class S3EnabledImageField(models.ImageField):
         name, path, args, kwargs = super(S3EnabledImageField, self).deconstruct()
         del kwargs["storage"]
         return name, path, args, kwargs
+
+# Use this in requirements.txt in place of django-import-export
+# git+https://github.com/bmihelac/django-import-export.git#egg=django-import-export

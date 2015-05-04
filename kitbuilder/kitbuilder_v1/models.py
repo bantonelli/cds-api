@@ -137,7 +137,6 @@ class Sample(models.Model):
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=20, choices=SAMPLE_TYPE_CHOICES)
     bpm = models.IntegerField(default=0, blank=True, null=True)
-    duration = models.DurationField(blank=True, null=True)  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
     preview = models.TextField()
     wav = models.TextField()
