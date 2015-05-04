@@ -18,6 +18,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.files import File
 import os
 
+
 class S3Storage(FileSystemStorage):
     def __init__(self, bucket=None, location=None, base_url=None):
         assert bucket
@@ -106,17 +107,3 @@ class S3EnabledImageField(models.ImageField):
         name, path, args, kwargs = super(S3EnabledImageField, self).deconstruct()
         del kwargs["storage"]
         return name, path, args, kwargs
-
-
-class S3EnabledURLField(models.URLField):
-    def __init__(self, *args, **kwargs):
-        super(S3EnabledURLField, self).__init__(*args, **kwargs)
-
-    def get_bucket(self):
-        if settings.USE_AMAZON_S3:
-            bucket = settings.AWS_STORAGE_BUCKET_NAME
-            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-            if not self.connection.lookup(bucket):
-                self.connection.create_bucket(bucket)
-            self.bucket = self.connection.get_bucket(bucket)
-            return self.bucket
