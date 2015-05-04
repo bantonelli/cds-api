@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'tinymce',
     'herokuapp',
+    'import_export',
 )
 
 MIDDLEWARE_CLASSES = (

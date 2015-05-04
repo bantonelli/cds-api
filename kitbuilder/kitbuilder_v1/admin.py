@@ -1,5 +1,18 @@
 from django.contrib import admin
 from models import *
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+
+class SampleResource(resources.ModelResource):
+
+    class Meta:
+        model = Sample
+
+
+class SampleAdmin(ImportExportModelAdmin):
+    resource_class = SampleResource
+    list_display = ('name', 'vendor_kit', 'type')
 
 
 class TagInline(admin.TabularInline):
@@ -19,10 +32,6 @@ class VendorKitAdmin(admin.ModelAdmin):
 #     inlines = [
 #         TagInline,
 #     ]
-
-
-class SampleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'vendor_kit', 'type')
 
 
 admin.site.register(Price)
