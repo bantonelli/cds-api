@@ -2,7 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import tinymce.models
 import kitbuilder.kitbuilder_v1.models
+import amazon_file_field
 
 
 class Migration(migrations.Migration):
@@ -27,10 +29,11 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('last_updated', models.DateField(auto_now=True)),
-                ('purchases', models.IntegerField(default=0)),
+                ('times_added', models.IntegerField(default=0)),
+                ('description', models.TextField(blank=True)),
                 ('featured', models.BooleanField(default=False)),
                 ('public', models.BooleanField(default=False)),
-                ('image', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_template_image)),
+                ('image', amazon_file_field.S3EnabledImageField(upload_to=kitbuilder.kitbuilder_v1.models.upload_template_image)),
             ],
         ),
         migrations.CreateModel(
@@ -64,8 +67,8 @@ class Migration(migrations.Migration):
                 ('bpm', models.IntegerField(default=0, null=True, blank=True)),
                 ('duration', models.DurationField(null=True, blank=True)),
                 ('key', models.CharField(max_length=10, null=True, blank=True)),
-                ('preview', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_sample_preview)),
-                ('wav', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_sample_wav)),
+                ('preview', models.TextField()),
+                ('wav', models.TextField()),
             ],
         ),
         migrations.CreateModel(
@@ -81,7 +84,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('website', models.URLField(null=True, blank=True)),
-                ('logo', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_vendor_kit_image)),
+                ('logo', amazon_file_field.S3EnabledImageField(upload_to=kitbuilder.kitbuilder_v1.models.upload_vendor_logo)),
                 ('facebook', models.URLField(null=True, blank=True)),
                 ('twitter', models.URLField(null=True, blank=True)),
                 ('google_plus', models.URLField(null=True, blank=True)),
@@ -99,7 +102,8 @@ class Migration(migrations.Migration):
                 ('active', models.BooleanField(default=True)),
                 ('on_sale', models.BooleanField(default=False)),
                 ('soundcloud', models.CharField(max_length=500)),
-                ('image', models.FileField(storage=kitbuilder.kitbuilder_v1.models.OverwriteStorage(), upload_to=kitbuilder.kitbuilder_v1.models.upload_vendor_kit_image)),
+                ('image', amazon_file_field.S3EnabledImageField(upload_to=kitbuilder.kitbuilder_v1.models.upload_vendor_kit_image)),
+                ('description', tinymce.models.HTMLField(blank=True)),
                 ('sample_count', models.IntegerField(null=True, blank=True)),
                 ('commission_rate', models.DecimalField(max_digits=10, decimal_places=2)),
                 ('price', models.ForeignKey(to='kitbuilder_v1.Price')),

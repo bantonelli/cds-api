@@ -5,11 +5,21 @@ from datetime import date
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from tinymce.models import HTMLField
-from amazon_file_field import S3EnabledFileField, S3EnabledImageField
-
-
+from amazon_file_field import S3Storage, S3EnabledImageField
+from boto.s3.key import Key
+from boto.s3.connection import S3Connection
 #-------------------------------------------------------------->
 # UTILITIES
+
+
+def get_bucket():
+    if settings.USE_AMAZON_S3:
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
+        connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        if not connection.lookup(bucket):
+            connection.create_bucket(bucket)
+        bucket = connection.get_bucket(bucket)
+        return bucket
 
 User = settings.AUTH_USER_MODEL
 
@@ -69,6 +79,7 @@ def upload_vendor_kit_image(instance, filename):
 class Vendor(CommonInfo):
     website = models.URLField(blank=True, null=True)
 #    description = models.ForeignKey(KitDescription) # This should be a WYSIWYG field
+#     logo = models.ImageField(upload_to=upload_vendor_logo, storage=S3Storage(get_bucket()))
     logo = S3EnabledImageField(upload_to=upload_vendor_logo)
     facebook = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
@@ -80,6 +91,7 @@ class VendorKit (CommonInfo):
     active = models.BooleanField(default=True)
     on_sale = models.BooleanField(default=False)
     soundcloud = models.CharField(max_length=500)
+    # image = models.ImageField(upload_to=upload_vendor_kit_image, storage=S3Storage(get_bucket()))
     image = S3EnabledImageField(upload_to=upload_vendor_kit_image)
     description = HTMLField(blank=True) # This should be a WYSIWYG field
     sample_count = models.IntegerField(blank=True, null=True)
@@ -127,11 +139,18 @@ class Sample(models.Model):
     bpm = models.IntegerField(default=0, blank=True, null=True)
     duration = models.DurationField(blank=True, null=True)  # add this field when updating to 1.8
     key = models.CharField(max_length=10, blank=True, null=True)
-    # preview = S3EnabledFileField(upload_to=upload_sample_preview)
-    # wav = S3EnabledFileField(upload_to=upload_sample_wav)
-    preview = models.URLField(max_length=500)
-    wav = models.URLField(max_length=500)
+    preview = models.TextField()
+    wav = models.TextField()
     vendor_kit = models.ForeignKey(VendorKit, related_name="samples")
+    bucket = get_bucket()
+
+    @property
+    def s3_preview_url(self):
+        return Key(self.bucket, self.preview).generate_url(100000)
+
+    @property
+    def s3_wav_url(self):
+        return Key(self.bucket, self.wav).generate_url(100000)
 
     def __unicode__(self):
         return self.name
@@ -168,7 +187,8 @@ class KitBuilderTemplate(models.Model):
     description = models.TextField(blank=True)
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
-    image = S3EnabledImageField(upload_to=upload_template_image, blank=True, null=True)
+    # image = models.ImageField(upload_to=upload_template_image, storage=S3Storage(get_bucket()), blank=True, null=True)
+    image = S3EnabledImageField(upload_to=upload_template_image)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)

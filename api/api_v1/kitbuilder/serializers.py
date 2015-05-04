@@ -38,15 +38,15 @@ class VendorKitSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # SAMPLE SERIALIZERS
 class SamplePreviewSerializer(serializers.ModelSerializer):
-    # preview = serializers.ReadOnlyField(source='preview.url')
+    # preview = serializers.ReadOnlyField(source='s3_preview_url')
 
     class Meta:
         model = Sample
-        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'preview', 'vendor_kit')
+        fields = ('id', 'name', 'type', 'bpm', 'duration', 'key', 'preview', 's3_preview_url', 'vendor_kit')
 
 
 class SampleSerializer(serializers.ModelSerializer):
-    # wav = serializers.ReadOnlyField(source='wav.url')
+    wav = serializers.ReadOnlyField(source='s3_wav_url')
 
     class Meta:
         model = Sample

@@ -16,7 +16,6 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from django.core.files.storage import FileSystemStorage
 from django.core.files import File
-from custom_storages import MediaStorage
 import os
 
 class S3Storage(FileSystemStorage):
@@ -101,4 +100,23 @@ class S3EnabledImageField(models.ImageField):
                 self.connection.create_bucket(bucket)
             self.bucket = self.connection.get_bucket(bucket)
             kwargs['storage'] = S3Storage(self.bucket)
-        super(S3EnabledImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs) 
+        super(S3EnabledImageField, self).__init__(verbose_name, name, width_field, height_field, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(S3EnabledImageField, self).deconstruct()
+        del kwargs["storage"]
+        return name, path, args, kwargs
+
+
+class S3EnabledURLField(models.URLField):
+    def __init__(self, *args, **kwargs):
+        super(S3EnabledURLField, self).__init__(*args, **kwargs)
+
+    def get_bucket(self):
+        if settings.USE_AMAZON_S3:
+            bucket = settings.AWS_STORAGE_BUCKET_NAME
+            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+            if not self.connection.lookup(bucket):
+                self.connection.create_bucket(bucket)
+            self.bucket = self.connection.get_bucket(bucket)
+            return self.bucket
