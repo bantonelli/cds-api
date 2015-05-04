@@ -6,7 +6,7 @@ Django==1.8
 django-braces==1.4.0
 django-cors-headers==1.0.0
 django-herokuapp==0.9.19
-django-import-export==0.2.7.dev0
+git+https://github.com/bmihelac/django-import-export.git#egg=django-import-export
 django-oauth-plus==2.2.6
 django-oauth2-provider==0.2.6.1
 django-require==1.0.7
@@ -35,3 +35,4 @@ static3==0.5.1
 stripe==1.20.2
 tablib==0.10.0
 waitress==0.8.9
+
