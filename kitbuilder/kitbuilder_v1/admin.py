@@ -8,8 +8,6 @@ class SampleResource(resources.ModelResource):
 
     class Meta:
         model = Sample
-        fields = ('name', 'type', 'bpm', 'key', 'preview', 'wav', 'vendor_kit')
-        import_id_fields = ['name']
 
 
 class SampleAdmin(ImportExportModelAdmin):
