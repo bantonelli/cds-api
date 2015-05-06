@@ -98,7 +98,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     #     self.object = User.objects.create_user(**dict(self.init_data.items()))
     #     return self.object
     def save(self, **kwargs):
-        args = dict(self.init_data.items())
+        args = dict(self.initial_data.items())
         email = args['email']
         username = args['username']
         password = args['password']
