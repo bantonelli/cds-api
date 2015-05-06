@@ -95,12 +95,21 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
             return serializers.UserRegistrationWithAuthTokenSerializer
         return serializers.UserRegistrationSerializer
 
-    def post_save(self, obj, created=False):
+    # DRF 2.0 Implementation
+    # def post_save(self, obj, created=False):
+    #     # For Token Based authentication only not Oauth2
+    #     if settings.get('LOGIN_AFTER_REGISTRATION'):
+    #         Token.objects.get_or_create(user=obj)
+    #     if settings.get('SEND_ACTIVATION_EMAIL'):
+    #         self.send_email(**self.get_send_email_kwargs(obj))
+
+    def perform_create(self, serializer):
         # For Token Based authentication only not Oauth2
+        new_user = serializer.save()
         if settings.get('LOGIN_AFTER_REGISTRATION'):
-            Token.objects.get_or_create(user=obj)
+            Token.objects.get_or_create(user=new_user)
         if settings.get('SEND_ACTIVATION_EMAIL'):
-            self.send_email(**self.get_send_email_kwargs(obj))
+            self.send_email(**self.get_send_email_kwargs(new_user))
 
     def get_send_email_extras(self):
         return {
@@ -314,8 +323,12 @@ class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUser
     def get_serializer_class(self):
         return serializers.UpdateUserSerializer
 
-    def post_save(self, obj, created=False):
-        self.send_email(**self.get_send_email_kwargs(obj))
+    # DRF 2.0 Implementation
+    # def post_save(self, obj, created=False):
+    #     self.send_email(**self.get_send_email_kwargs(obj))
+    def perform_update(self, serializer):
+        user = serializer.save()
+        self.send_email(**self.get_send_email_kwargs(user))
 
     def get_send_email_extras(self):
         return {

@@ -37,3 +37,5 @@ class IsActiveUser(permissions.BasePermission):
             token = AccessToken.objects.get_token(token=token_string)
             user = token.user
             return user.is_active
+
+

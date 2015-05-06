@@ -11,14 +11,13 @@ class UidAndTokenSerializer(serializers.Serializer):
     uid = serializers.CharField()
     token = serializers.CharField()
 
-    def validate_uid(self, attrs, source):
-        value = attrs[source]
+    def validate_uid(self, value):
         try:
             uid = utils.decode_uid(value)
             self.user = User.objects.get(pk=uid)
         except (User.DoesNotExist, ValueError, TypeError, ValueError, OverflowError) as error:
             raise serializers.ValidationError(error)
-        return attrs
+        return value
 
     def validate(self, attrs):
         attrs = super(UidAndTokenSerializer, self).validate(attrs)
@@ -59,7 +58,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     def validate_temp_email(self, value, source):
         from django.core.validators import validate_email
-        args = dict(self.init_data.items())
+        args = dict(self.initial_data.items())
         email = args['temp_email']
         try:
             validate_email(email)
@@ -70,7 +69,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     def validate_temp_username(self, value, source):
         from django import forms
         username_field = forms.CharField(max_length=30)
-        args = dict(self.init_data.items())
+        args = dict(self.initial_data.items())
         temp_username = args['temp_username']
         try:
             username_field.clean(temp_username)
@@ -98,10 +97,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     #     self.object = User.objects.create_user(**dict(self.init_data.items()))
     #     return self.object
     def save(self, **kwargs):
-        args = dict(self.initial_data.items())
-        email = args['email']
-        username = args['username']
-        password = args['password']
+        # args = dict(self.initial_data.items())
+        email = self.validated_data['email']
+        username = self.validated_data['username']
+        password = self.validated_data['password']
         self.object = User.objects.create_user(email=email, username=username, password=password)
         return self.object
 

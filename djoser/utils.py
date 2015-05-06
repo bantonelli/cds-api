@@ -29,11 +29,11 @@ def send_email(to_email, from_email, context, subject_template_name,
     subject = loader.render_to_string(subject_template_name, context)
     subject = ''.join(subject.splitlines())
     body = loader.render_to_string(plain_body_template_name, context)
-    email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+    email_message = EmailMultiAlternatives(subject, body, from_email, [to_email],)
     if html_body_template_name is not None:
         html_email = loader.render_to_string(html_body_template_name, context)
         email_message.attach_alternative(html_email, 'text/html')
-    email_message.send()
+    email_message.send(fail_silently=False)
 
 
 class ActionViewMixin(object):
@@ -98,3 +98,41 @@ class SendEmailViewMixin(object):
             'token': token,
             'protocol': 'https' if self.request.is_secure() else 'http',
         }
+
+
+# For local testing
+#  class SendEmailViewMixin(object):
+#
+#     #3rd
+#     def send_email(self, to_email, from_email, context):
+#         send_email(to_email, from_email, context, **self.get_send_email_extras())
+#
+#     # 1st
+#     def get_send_email_kwargs(self, user):
+#         return {
+#             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
+#             'to_email': user.email,
+#             'context': self.get_email_context(user),
+#         }
+#
+#     def get_send_email_extras(self):
+#         return {
+#             'subject_template_name': 'activation_email_subject.txt',
+#             'plain_body_template_name': 'activation_email_body.txt',
+#         }
+#
+#     # 2nd
+#     def get_email_context(self, user):
+#         token = "token"
+#         # if self.token_generator is not None:
+#         #     token = self.token_generator.make_token(user)
+#         uid = encode_uid(user.pk)
+#         return {
+#             'user': user,
+#             'domain': settings.get('DOMAIN'),
+#             'site_name': settings.get('SITE_NAME'),
+#             'uid': uid,
+#             'token': token,
+#             # 'protocol': 'https' if self.request.is_secure() else 'http',
+#             'protocol': 'http',
+#         }

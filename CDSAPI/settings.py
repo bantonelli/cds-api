@@ -177,8 +177,8 @@ CORS_ALLOW_METHODS = (
 AUTH_USER_MODEL = 'useraccount.User'
 
 DJOSER = {
-    'DOMAIN': 'https://fierce-depths-3755.herokuapp.com',
-    'SITE_NAME': 'Custom Drum Samples',
+    'DOMAIN': 'fierce-depths-3755.herokuapp.com',
+    'SITE_NAME': 'Beat Paradigm',
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'ACTIVATION_URL': 'registration/activate/{uid}/{token}',
     'ACCOUNT_UPDATE_CONFIRM_URL': 'account-settings/update-info/{uid}/{token}',
