@@ -72,30 +72,6 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     user = serializers.CharField(read_only=True, source='user.user.username')
     image = serializers.ImageField(allow_empty_file=True, required=False, max_length=None)
 
-    def create(self, validated_data):
-        user = validated_data.get('user')
-        name = validated_data.get('name')
-        public = validated_data.get('public')
-        if public is None:
-            public = False
-        image = validated_data.get('image')
-        samples = validated_data.get('samples')
-        tags = validated_data.get('tags')
-        template = KitBuilderTemplate(
-            user=user,
-            name=name,
-            public=public,
-        )
-        template.save()
-        template.image = image
-        template.save()
-        for tag in tags:
-            template.tags.add(tag)
-        for sample in samples:
-            template.samples.add(sample)
-        template.save()
-        return template
-
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.public = validated_data.get('public', instance.public)
