@@ -56,7 +56,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'username',
         )
 
-    def validate_temp_email(self, value, source):
+    def validate_temp_email(self, value):
         from django.core.validators import validate_email
         args = dict(self.initial_data.items())
         email = args['temp_email']
@@ -66,7 +66,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         except ValidationError:
             raise serializers.ValidationError("Not a valid email address")
 
-    def validate_temp_username(self, value, source):
+    def validate_temp_username(self, value):
         from django import forms
         username_field = forms.CharField(max_length=30)
         args = dict(self.initial_data.items())
