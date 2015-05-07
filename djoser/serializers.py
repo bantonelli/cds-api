@@ -160,11 +160,10 @@ class PasswordRetypeSerializer(PasswordSerializer):
 class CurrentPasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField()
 
-    def validate_current_password(self, attrs, source):
-        value = attrs[source]
+    def validate_current_password(self, value):
         if not self.context['request'].user.check_password(value):
             raise serializers.ValidationError(constants.INVALID_PASSWORD_ERROR)
-        return attrs
+        return value
 
 
 class SetPasswordSerializer(PasswordSerializer, CurrentPasswordSerializer):
