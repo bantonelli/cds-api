@@ -69,75 +69,6 @@ class RetrieveActionViewMixin(object):
             )
 
 
-# class SendEmailViewMixin(object):
-#
-#     #3rd
-#     def send_email(self, to_email, from_email, context):
-#         send_email(to_email, from_email, context, **self.get_send_email_extras())
-#
-#     # 1st
-#     def get_send_email_kwargs(self, user):
-#         return {
-#             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
-#             'to_email': user.email,
-#             'context': self.get_email_context(user),
-#         }
-#
-#     def get_send_email_extras(self):
-#         raise NotImplemented
-#
-#     # 2nd
-#     def get_email_context(self, user):
-#         token = self.token_generator.make_token(user)
-#         uid = encode_uid(user.pk)
-#         return {
-#             'user': user,
-#             'domain': settings.get('DOMAIN'),
-#             'site_name': settings.get('SITE_NAME'),
-#             'uid': uid,
-#             'token': token,
-#             'protocol': 'https' if self.request.is_secure() else 'http',
-#         }
-
-
-# For local testing
-#  class SendEmailViewMixin(object):
-#
-#     #3rd
-#     def send_email(self, to_email, from_email, context):
-#         send_email(to_email, from_email, context, **self.get_send_email_extras())
-#
-#     # 1st
-#     def get_send_email_kwargs(self, user):
-#         return {
-#             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
-#             'to_email': user.email,
-#             'context': self.get_email_context(user),
-#         }
-#
-#     def get_send_email_extras(self):
-#         return {
-#             'subject_template_name': 'activation_email_subject.txt',
-#             'plain_body_template_name': 'activation_email_body.txt',
-#         }
-#
-#     # 2nd
-#     def get_email_context(self, user):
-#         token = "token"
-#         # if self.token_generator is not None:
-#         #     token = self.token_generator.make_token(user)
-#         uid = encode_uid(user.pk)
-#         return {
-#             'user': user,
-#             'domain': settings.get('DOMAIN'),
-#             'site_name': settings.get('SITE_NAME'),
-#             'uid': uid,
-#             'token': token,
-#             # 'protocol': 'https' if self.request.is_secure() else 'http',
-#             'protocol': 'http',
-#         }
-
-
 import sendgrid
 sendgrid_username = django_settings.EMAIL_HOST_USER
 sendgrid_password = django_settings.EMAIL_HOST_PASSWORD
@@ -173,7 +104,10 @@ class SendEmailViewMixin(object):
 
     #3rd
     def send_email(self, to_email, from_email, context):
-        sendgrid_email(to_email, from_email, context, **self.get_send_email_extras())
+        if django_settings.USE_SENDGRID:
+            sendgrid_email(to_email, from_email, context, **self.get_send_email_extras())
+        else:
+            send_email(to_email, from_email, context, **self.get_send_email_extras())
 
     # 1st
     def get_send_email_kwargs(self, user):
@@ -184,16 +118,11 @@ class SendEmailViewMixin(object):
         }
 
     def get_send_email_extras(self):
-        return {
-            'subject_template_name': 'activation_email_subject.txt',
-            'plain_body_template_name': 'activation_email_body.txt',
-        }
+        raise NotImplemented
 
     # 2nd
     def get_email_context(self, user):
-        token = "token"
-        # if self.token_generator is not None:
-        #     token = self.token_generator.make_token(user)
+        token = self.token_generator.make_token(user)
         uid = encode_uid(user.pk)
         return {
             'user': user,
@@ -201,6 +130,43 @@ class SendEmailViewMixin(object):
             'site_name': settings.get('SITE_NAME'),
             'uid': uid,
             'token': token,
-            # 'protocol': 'https' if self.request.is_secure() else 'http',
-            'protocol': 'http',
+            'protocol': 'https' if self.request.is_secure() else 'http',
         }
+
+
+# For local testing
+# class SendEmailViewMixin(object):
+#
+#     #3rd
+#     def send_email(self, to_email, from_email, context):
+#         sendgrid_email(to_email, from_email, context, **self.get_send_email_extras())
+#
+#     # 1st
+#     def get_send_email_kwargs(self, user):
+#         return {
+#             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
+#             'to_email': user.email,
+#             'context': self.get_email_context(user),
+#         }
+#
+#     def get_send_email_extras(self):
+#         return {
+#             'subject_template_name': 'activation_email_subject.txt',
+#             'plain_body_template_name': 'activation_email_body.txt',
+#         }
+#
+#     # 2nd
+#     def get_email_context(self, user):
+#         token = "token"
+#         # if self.token_generator is not None:
+#         #     token = self.token_generator.make_token(user)
+#         uid = encode_uid(user.pk)
+#         return {
+#             'user': user,
+#             'domain': settings.get('DOMAIN'),
+#             'site_name': settings.get('SITE_NAME'),
+#             'uid': uid,
+#             'token': token,
+#             # 'protocol': 'https' if self.request.is_secure() else 'http',
+#             'protocol': 'http',
+#         }

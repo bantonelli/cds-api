@@ -193,6 +193,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_PASSWORD", "")
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = "info@beatparadigm.com"
+USE_SENDGRID = True
 
 #-------------------------------------------------------------->
 # STRIPE SETTINGS
