@@ -69,35 +69,35 @@ class RetrieveActionViewMixin(object):
             )
 
 
-class SendEmailViewMixin(object):
-
-    #3rd
-    def send_email(self, to_email, from_email, context):
-        send_email(to_email, from_email, context, **self.get_send_email_extras())
-
-    # 1st
-    def get_send_email_kwargs(self, user):
-        return {
-            'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
-            'to_email': user.email,
-            'context': self.get_email_context(user),
-        }
-
-    def get_send_email_extras(self):
-        raise NotImplemented
-
-    # 2nd
-    def get_email_context(self, user):
-        token = self.token_generator.make_token(user)
-        uid = encode_uid(user.pk)
-        return {
-            'user': user,
-            'domain': settings.get('DOMAIN'),
-            'site_name': settings.get('SITE_NAME'),
-            'uid': uid,
-            'token': token,
-            'protocol': 'https' if self.request.is_secure() else 'http',
-        }
+# class SendEmailViewMixin(object):
+#
+#     #3rd
+#     def send_email(self, to_email, from_email, context):
+#         send_email(to_email, from_email, context, **self.get_send_email_extras())
+#
+#     # 1st
+#     def get_send_email_kwargs(self, user):
+#         return {
+#             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
+#             'to_email': user.email,
+#             'context': self.get_email_context(user),
+#         }
+#
+#     def get_send_email_extras(self):
+#         raise NotImplemented
+#
+#     # 2nd
+#     def get_email_context(self, user):
+#         token = self.token_generator.make_token(user)
+#         uid = encode_uid(user.pk)
+#         return {
+#             'user': user,
+#             'domain': settings.get('DOMAIN'),
+#             'site_name': settings.get('SITE_NAME'),
+#             'uid': uid,
+#             'token': token,
+#             'protocol': 'https' if self.request.is_secure() else 'http',
+#         }
 
 
 # For local testing
@@ -136,3 +136,68 @@ class SendEmailViewMixin(object):
 #             # 'protocol': 'https' if self.request.is_secure() else 'http',
 #             'protocol': 'http',
 #         }
+
+
+import sendgrid
+sendgrid_username = django_settings.EMAIL_HOST_USER
+sendgrid_password = django_settings.EMAIL_HOST_PASSWORD
+# from_email = django_settings.DEFAULT_FROM_EMAIL
+
+
+def sendgrid_email(to_email, from_email, context, subject_template_name,
+               plain_body_template_name, html_body_template_name=None):
+    subject = loader.render_to_string(subject_template_name, context)
+    subject = ''.join(subject.splitlines())
+    body = loader.render_to_string(plain_body_template_name, context)
+    plaintext_body = body
+    html_body = "<p>" + plaintext_body.replace("\n", "</p><p>") + "</p>"
+    sg = sendgrid.SendGridClient(sendgrid_username, sendgrid_password)
+    message = sendgrid.Mail()
+    # Set to_email, subject, HTML/text body, from_email
+    message.add_to(to_email)
+    message.set_subject(subject)
+    message.set_html(html_body)
+    message.set_text(body)
+    message.set_from(from_email)
+    # Set the template
+    message.add_filter('templates', 'enable', '1')
+    message.add_filter('templates', 'template_id', '232a4384-493c-49c1-b41d-4f9f2dcc52f7')
+    # Send the email
+    status, msg = sg.send(message)
+
+
+class SendEmailViewMixin(object):
+
+    #3rd
+    def send_email(self, to_email, from_email, context):
+        sendgrid_email(to_email, from_email, context, **self.get_send_email_extras())
+
+    # 1st
+    def get_send_email_kwargs(self, user):
+        return {
+            'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
+            'to_email': user.email,
+            'context': self.get_email_context(user),
+        }
+
+    def get_send_email_extras(self):
+        return {
+            'subject_template_name': 'activation_email_subject.txt',
+            'plain_body_template_name': 'activation_email_body.txt',
+        }
+
+    # 2nd
+    def get_email_context(self, user):
+        token = "token"
+        # if self.token_generator is not None:
+        #     token = self.token_generator.make_token(user)
+        uid = encode_uid(user.pk)
+        return {
+            'user': user,
+            'domain': settings.get('DOMAIN'),
+            'site_name': settings.get('SITE_NAME'),
+            'uid': uid,
+            'token': token,
+            # 'protocol': 'https' if self.request.is_secure() else 'http',
+            'protocol': 'http',
+        }
