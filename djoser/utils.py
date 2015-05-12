@@ -162,8 +162,11 @@ def sendgrid_email(to_email, from_email, context, subject_template_name,
     # Set the template
     message.add_filter('templates', 'enable', '1')
     message.add_filter('templates', 'template_id', '232a4384-493c-49c1-b41d-4f9f2dcc52f7')
+    message.add_filter('template', 'enable', '0')
     # Send the email
     status, msg = sg.send(message)
+    print status
+    print msg
 
 
 class SendEmailViewMixin(object):
