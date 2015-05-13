@@ -1,7 +1,25 @@
 __author__ = 'brandonantonelli'
 # from django.conf import settings
 from rest_framework import serializers
-from kitbuilder.kitbuilder_v1.models import Tag, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
+from kitbuilder.kitbuilder_v1.models import Tag, Sale, Price, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
+
+
+#-------------------------------------------------------------->
+# PRICE
+class PriceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Price
+        fields = ('id', 'name', 'cost')
+
+
+#-------------------------------------------------------------->
+# SALE
+class SaleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Sale
+        fields = ('id', 'name', 'percent_off')
 
 
 #-------------------------------------------------------------->
@@ -29,6 +47,8 @@ class VendorKitSerializer(serializers.ModelSerializer):
     samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     image = serializers.ReadOnlyField(source='image.url')
     tags = TagSerializer(read_only=True)
+    price = PriceSerializer(read_only=True)
+    sale = SaleSerializer(read_only=True)
 
     class Meta:
         model = VendorKit

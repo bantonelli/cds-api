@@ -12,8 +12,15 @@ from djoser.utils import RetrieveActionViewMixin, ActionViewMixin, SendEmailView
 from djoser.views import OauthUserMixin
 
 
-
 ########### API VIEWS
+#-------------------------------------------------------------->
+# TAG VIEWS
+class TagList(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    required_scopes = ['read']
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
 
 #-------------------------------------------------------------->
 # SAMPLE VIEWS
