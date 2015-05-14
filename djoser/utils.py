@@ -75,8 +75,7 @@ sendgrid_password = django_settings.EMAIL_HOST_PASSWORD
 # from_email = django_settings.DEFAULT_FROM_EMAIL
 
 
-def sendgrid_email(to_email, from_email, context, subject_template_name,
-               plain_body_template_name, html_body_template_name=None):
+def sendgrid_email(to_email, from_email, context, subject_template_name, plain_body_template_name, html_body_template_name=None):
     subject = loader.render_to_string(subject_template_name, context)
     subject = ''.join(subject.splitlines())
     body = loader.render_to_string(plain_body_template_name, context)
@@ -94,6 +93,19 @@ def sendgrid_email(to_email, from_email, context, subject_template_name,
     message.add_filter('templates', 'enable', '1')
     message.add_filter('templates', 'template_id', '232a4384-493c-49c1-b41d-4f9f2dcc52f7')
     message.add_filter('template', 'enable', '0')
+    topic = context.get('topic', 'account_activation')
+    email_url = context['protocol'] + '://' + context['domain'] + '/' + context['url']
+    if topic == 'reset_password':
+        email_topic = "you requested a password reset for your user account at Beat Paradigm."
+        email_action = "confirm your new password"
+    elif topic == 'confirm_account_update':
+        email_topic = "you have updated your user account at Beat Paradigm."
+        email_action = "confirm the changes made"
+    else:
+        email_topic = "you created an account on Beat Paradigm."
+        email_action = "activate account:"
+    # Set the substitution headers
+    message.set_substitutions({':topic': [email_topic], ':action': [email_action], ':url': [email_url]})
     # Send the email
     status, msg = sg.send(message)
     print status
@@ -121,7 +133,7 @@ class SendEmailViewMixin(object):
         raise NotImplemented
 
     # 2nd
-    def get_email_context(self, user):
+    def get_email_context(self, user, topic):
         token = self.token_generator.make_token(user)
         uid = encode_uid(user.pk)
         return {
@@ -131,6 +143,7 @@ class SendEmailViewMixin(object):
             'uid': uid,
             'token': token,
             'protocol': 'https' if self.request.is_secure() else 'http',
+            'topic': topic
         }
 
 

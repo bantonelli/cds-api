@@ -40,6 +40,7 @@ class VendorSerializer(serializers.ModelSerializer):
         model = Vendor
         fields = ('id', 'name', 'website', 'logo', 'facebook', 'twitter', 'google_plus', 'soundcloud')
 
+
 #-------------------------------------------------------------->
 # SAMPLE SERIALIZERS
 class SamplePreviewSerializer(serializers.ModelSerializer):
