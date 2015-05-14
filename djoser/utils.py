@@ -126,7 +126,7 @@ class SendEmailViewMixin(object):
         return {
             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
             'to_email': user.email,
-            'context': self.get_email_context(user),
+            'context': self.get_email_context(user, 'account_activation'),
         }
 
     def get_send_email_extras(self):
