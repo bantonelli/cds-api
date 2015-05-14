@@ -40,21 +40,6 @@ class VendorSerializer(serializers.ModelSerializer):
         model = Vendor
         fields = ('id', 'name', 'website', 'logo', 'facebook', 'twitter', 'google_plus', 'soundcloud')
 
-
-#-------------------------------------------------------------->
-# VENDOR KIT
-class VendorKitSerializer(serializers.ModelSerializer):
-    samples = SamplePreviewSerializer(many=True, read_only=True)
-    image = serializers.ReadOnlyField(source='image.url')
-    tags = TagSerializer(read_only=True)
-    price = PriceSerializer(read_only=True)
-    sale = SaleSerializer(read_only=True)
-
-    class Meta:
-        model = VendorKit
-        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'description', 'sample_count', 'commission_rate', 'vendor', 'tags', 'price', 'sale', 'samples')
-
-
 #-------------------------------------------------------------->
 # SAMPLE SERIALIZERS
 class SamplePreviewSerializer(serializers.ModelSerializer):
@@ -71,6 +56,20 @@ class SampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sample
         fields = ('id', 'name', 'type', 'bpm', 'key', 'wav', 'vendor_kit')
+
+
+#-------------------------------------------------------------->
+# VENDOR KIT
+class VendorKitSerializer(serializers.ModelSerializer):
+    samples = SamplePreviewSerializer(many=True, read_only=True)
+    image = serializers.ReadOnlyField(source='image.url')
+    tags = TagSerializer(read_only=True)
+    price = PriceSerializer(read_only=True)
+    sale = SaleSerializer(read_only=True)
+
+    class Meta:
+        model = VendorKit
+        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'description', 'sample_count', 'commission_rate', 'vendor', 'tags', 'price', 'sale', 'samples')
 
 
 #-------------------------------------------------------------->
