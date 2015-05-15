@@ -1,3 +1,7 @@
 {% load i18n %}{% autoescape off %}
-
+{% blocktrans %}
+You are receiving this email becuase you made changes to your account on
+BeatParadigm.com. We just need you to confirm your changes by clicking below. Then
+you can get back to creating and sharing drum packs with us.
+{% endblocktrans %}
 {% endautoescape %}

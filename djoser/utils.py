@@ -94,18 +94,28 @@ def sendgrid_email(to_email, from_email, context, subject_template_name, plain_b
     message.add_filter('templates', 'template_id', '232a4384-493c-49c1-b41d-4f9f2dcc52f7')
     message.add_filter('template', 'enable', '0')
     topic = context.get('topic', 'account_activation')
-    email_url = context['url']
+    email_url = context['protocol'] + '://' + context['domain'] + '/' + context['url']
+    email_team = ""
+    email_closer = ""
+    email_name = context['user'].username
+    reset_password_sal = "Hi :name,"
+    account_update_sal = "Hi :name,"
+    account_activate_sal = "Congratulations :name!"
     if topic == 'reset_password':
-        email_topic = "you requested a password reset for your user account at Beat Paradigm."
-        email_action = "confirm your new password"
+        email_salutation = ":reset_password_sal"
+        email_action = "Confirm New Password"
     elif topic == 'confirm_account_update':
-        email_topic = "you have updated your user account at Beat Paradigm."
-        email_action = "confirm the changes made"
+        email_salutation = ":account_update_sal"
+        email_action = "Confirm Account Changes"
     else:
-        email_topic = "you created an account on Beat Paradigm."
-        email_action = "activate account:"
+        email_salutation = ":account_activate_sal"
+        email_action = "Activate Account"
+        email_team = "The Beat Paradigm Team"
+        email_closer = "Thanks,"
+
     # Set the substitution headers
-    message.set_substitutions({':topic': [email_topic], ':action': [email_action], ':url': [email_url]})
+    message.set_substitutions({':salutation': email_salutation, ':name':email_name, ':closer': email_closer, ':team': [email_team], ':action': [email_action], ':url': [email_url]})
+    message.set_sections({':account_update_sal': account_update_sal, ':reset_password_sal': reset_password_sal, ':account_activate_sal': account_activate_sal})
     # Send the email
     status, msg = sg.send(message)
     print status
@@ -122,11 +132,13 @@ class SendEmailViewMixin(object):
             send_email(to_email, from_email, context, **self.get_send_email_extras())
 
     # 1st
-    def get_send_email_kwargs(self, user):
+    # kwargs method takes in the email topic as a string
+    # topic can be either: 'account_activation', 'reset_password', or 'confirm_account_update'
+    def get_send_email_kwargs(self, user, topic):
         return {
             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
             'to_email': user.email,
-            'context': self.get_email_context(user, 'account_activation'),
+            'context': self.get_email_context(user, topic),
         }
 
     def get_send_email_extras(self):

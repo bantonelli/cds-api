@@ -11,4 +11,4 @@ user = User.objects.get(pk=17)
 
 email_mixin = SendEmailViewMixin()
 
-email_mixin.send_email(**email_mixin.get_send_email_kwargs(user))
+email_mixin.send_email(**email_mixin.get_send_email_kwargs(user, 'account_activation'))

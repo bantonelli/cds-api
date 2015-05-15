@@ -57,7 +57,7 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
         try:
             user = User.objects.get(pk=user_id)
             if settings.get('SEND_ACTIVATION_EMAIL'):
-                self.send_email(**self.get_send_email_kwargs(user))
+                self.send_email(**self.get_send_email_kwargs(user, 'account_activation'))
                 mail_sent = True
             # Build JSON response object
             result.append({
@@ -78,8 +78,8 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
             'plain_body_template_name': 'activation_email_body.txt',
         }
 
-    def get_email_context(self, user):
-        context = super(ResendActivationEmailView, self).get_email_context(user, 'account_activation')
+    def get_email_context(self, user, topic):
+        context = super(ResendActivationEmailView, self).get_email_context(user, topic)
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
 
@@ -109,7 +109,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
         if settings.get('LOGIN_AFTER_REGISTRATION'):
             Token.objects.get_or_create(user=new_user)
         if settings.get('SEND_ACTIVATION_EMAIL'):
-            self.send_email(**self.get_send_email_kwargs(new_user))
+            self.send_email(**self.get_send_email_kwargs(new_user, 'account_activation'))
 
     def get_send_email_extras(self):
         return {
@@ -117,8 +117,8 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
             'plain_body_template_name': 'activation_email_body.txt',
         }
 
-    def get_email_context(self, user):
-        context = super(RegistrationView, self).get_email_context(user, 'account_activation')
+    def get_email_context(self, user, topic):
+        context = super(RegistrationView, self).get_email_context(user, topic)
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
 
@@ -182,7 +182,7 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
                 new_password = serializer.data['new_password']
                 user.set_temp_password(new_password)
                 user.save()
-                self.send_email(**self.get_send_email_kwargs(user))
+                self.send_email(**self.get_send_email_kwargs(user, 'reset_password'))
                 return response.Response(status=status.HTTP_200_OK)
             else:
                 data = {"user": ["The user account associated with this email is not active!"]}
@@ -210,8 +210,8 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
             'plain_body_template_name': 'password_reset_email_body.txt',
         }
 
-    def get_email_context(self, user):
-        context = super(PasswordResetView, self).get_email_context(user, 'reset_password')
+    def get_email_context(self, user, topic):
+        context = super(PasswordResetView, self).get_email_context(user, topic)
         context['url'] = settings.get('PASSWORD_RESET_CONFIRM_URL').format(**context)
         return context
 
@@ -328,7 +328,7 @@ class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUser
     #     self.send_email(**self.get_send_email_kwargs(obj))
     def perform_update(self, serializer):
         user = serializer.save()
-        self.send_email(**self.get_send_email_kwargs(user))
+        self.send_email(**self.get_send_email_kwargs(user, 'confirm_account_update'))
 
     def get_send_email_extras(self):
         return {
@@ -338,15 +338,15 @@ class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUser
 
     # Override original implementation of this method to send
     # confirmation to temp_email address.
-    def get_send_email_kwargs(self, user):
+    def get_send_email_kwargs(self, user, topic):
         return {
             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
             'to_email': user.temp_email,
-            'context': self.get_email_context(user),
+            'context': self.get_email_context(user, topic),
         }
 
-    def get_email_context(self, user):
-        context = super(UpdateUserView, self).get_email_context(user, 'confirm_account_update')
+    def get_email_context(self, user, topic):
+        context = super(UpdateUserView, self).get_email_context(user, topic)
         context['url'] = settings.get('ACCOUNT_UPDATE_CONFIRM_URL').format(**context)
         return context
 
