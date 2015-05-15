@@ -79,7 +79,7 @@ class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
         }
 
     def get_email_context(self, user):
-        context = super(ResendActivationEmailView, self).get_email_context(user)
+        context = super(ResendActivationEmailView, self).get_email_context(user, 'account_activation')
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
 
@@ -118,7 +118,7 @@ class RegistrationView(utils.SendEmailViewMixin, generics.CreateAPIView, OauthUs
         }
 
     def get_email_context(self, user):
-        context = super(RegistrationView, self).get_email_context(user)
+        context = super(RegistrationView, self).get_email_context(user, 'account_activation')
         context['url'] = settings.get('ACTIVATION_URL').format(**context)
         return context
 
@@ -211,7 +211,7 @@ class PasswordResetView(utils.ActionViewMixin, utils.SendEmailViewMixin, generic
         }
 
     def get_email_context(self, user):
-        context = super(PasswordResetView, self).get_email_context(user)
+        context = super(PasswordResetView, self).get_email_context(user, 'reset_password')
         context['url'] = settings.get('PASSWORD_RESET_CONFIRM_URL').format(**context)
         return context
 
@@ -346,7 +346,7 @@ class UpdateUserView(utils.SendEmailViewMixin, generics.UpdateAPIView, OauthUser
         }
 
     def get_email_context(self, user):
-        context = super(UpdateUserView, self).get_email_context(user)
+        context = super(UpdateUserView, self).get_email_context(user, 'confirm_account_update')
         context['url'] = settings.get('ACCOUNT_UPDATE_CONFIRM_URL').format(**context)
         return context
 

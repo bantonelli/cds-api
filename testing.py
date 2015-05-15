@@ -7,7 +7,7 @@ __author__ = 'brandonantonelli'
 from djoser.utils import SendEmailViewMixin
 from useraccount.models import User
 
-user = User.objects.get(pk=15)
+user = User.objects.get(pk=17)
 
 email_mixin = SendEmailViewMixin()
 

@@ -94,7 +94,7 @@ def sendgrid_email(to_email, from_email, context, subject_template_name, plain_b
     message.add_filter('templates', 'template_id', '232a4384-493c-49c1-b41d-4f9f2dcc52f7')
     message.add_filter('template', 'enable', '0')
     topic = context.get('topic', 'account_activation')
-    email_url = context['protocol'] + '://' + context['domain'] + '/' + context['url']
+    email_url = context['url']
     if topic == 'reset_password':
         email_topic = "you requested a password reset for your user account at Beat Paradigm."
         email_action = "confirm your new password"
@@ -136,7 +136,7 @@ class SendEmailViewMixin(object):
     def get_email_context(self, user, topic):
         token = self.token_generator.make_token(user)
         uid = encode_uid(user.pk)
-        return {
+        context = {
             'user': user,
             'domain': settings.get('DOMAIN'),
             'site_name': settings.get('SITE_NAME'),
@@ -145,9 +145,11 @@ class SendEmailViewMixin(object):
             'protocol': 'https' if self.request.is_secure() else 'http',
             'topic': topic
         }
+        #context['url'] = context['protocol'] + '://' + context['domain'] + '/registration/activate/' + context['uid'] + '/' + context['token']
+        return context
 
 
-# For local testing
+# # For local testing
 # class SendEmailViewMixin(object):
 #
 #     #3rd
@@ -159,7 +161,7 @@ class SendEmailViewMixin(object):
 #         return {
 #             'from_email': getattr(django_settings, 'DEFAULT_FROM_EMAIL', None),
 #             'to_email': user.email,
-#             'context': self.get_email_context(user),
+#             'context': self.get_email_context(user, 'account_activation'),
 #         }
 #
 #     def get_send_email_extras(self):
@@ -169,12 +171,12 @@ class SendEmailViewMixin(object):
 #         }
 #
 #     # 2nd
-#     def get_email_context(self, user):
+#     def get_email_context(self, user, topic):
 #         token = "token"
 #         # if self.token_generator is not None:
 #         #     token = self.token_generator.make_token(user)
 #         uid = encode_uid(user.pk)
-#         return {
+#         context = {
 #             'user': user,
 #             'domain': settings.get('DOMAIN'),
 #             'site_name': settings.get('SITE_NAME'),
@@ -182,4 +184,7 @@ class SendEmailViewMixin(object):
 #             'token': token,
 #             # 'protocol': 'https' if self.request.is_secure() else 'http',
 #             'protocol': 'http',
+#             'topic': topic,
 #         }
+#         context['url'] = context['protocol'] + '://' + context['domain'] + '/registration/activate/' + context['uid'] + '/' + context['token']
+#         return context
