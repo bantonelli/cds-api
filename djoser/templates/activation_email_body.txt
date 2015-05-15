@@ -1,10 +1,8 @@
 {% load i18n %}{% autoescape off %}
 {% blocktrans %}
-You are receiving this email because you created an account on BeatParadigm.com.
-You have just become part of the only site where producers can preview, create and share drum packs.
+You are receiving this email because you created an account on BeatParadigm.com. You have just become part of the only site where producers can preview, create and share drum packs.
 {% endblocktrans %}
 {% blocktrans %}
-Once you confirm your account you can start using KitBuilder to preview, create and share your own custom
-drum packs with producers around the world.
+Once you confirm your account you can start using KitBuilder to preview, create and share your own custom drum packs with producers around the world.
 {% endblocktrans %}
 {% endautoescape %}

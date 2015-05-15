@@ -114,8 +114,8 @@ def sendgrid_email(to_email, from_email, context, subject_template_name, plain_b
         email_closer = "Thanks,"
 
     # Set the substitution headers
-    message.set_substitutions({':salutation': email_salutation, ':name':email_name, ':closer': email_closer, ':team': [email_team], ':action': [email_action], ':url': [email_url]})
-    message.set_sections({':account_update_sal': account_update_sal, ':reset_password_sal': reset_password_sal, ':account_activate_sal': account_activate_sal})
+    message.set_substitutions({':salutation': [email_salutation], ':name': [email_name], ':closer': [email_closer], ':team': [email_team], ':action': [email_action], ':url': [email_url]})
+    message.set_sections({':account_update_sal': account_update_sal, ':reset_password_sal': reset_password_sal, ':account_activate_sal' : account_activate_sal})
     # Send the email
     status, msg = sg.send(message)
     print status
