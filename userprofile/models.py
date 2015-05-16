@@ -26,6 +26,17 @@ class UserProfile(models.Model):
     def public_kitbuilder_templates(self):
         return self.kitbuilder_templates.filter(public=True)
 
+    @property
+    def samples_purchased(self):
+        samples = []
+        for purchase in self.kitbuilder_purchases.all():
+            samples.extend(purchase.samples.all())
+        samples_purchased = set()
+        for sample in samples:
+            samples_purchased.add(sample.id)
+        samples_purchased = list(samples_purchased)
+        return samples_purchased
+
     def __unicode__(self):
         return self.user.username
 
