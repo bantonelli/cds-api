@@ -191,10 +191,22 @@ class KitBuilderTemplate(models.Model):
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    followers = models.ManyToManyField(
+        UserProfile,
+        blank=True,
+        related_name="templates_followed",
+        through="Follower",
+        through_fields=('template', 'user')
+    )
 
     def __unicode__(self):
         return self.name
 
+
+class Follower(models.Model):
+    template = models.ForeignKey(KitBuilderTemplate)
+    user = models.ForeignKey(UserProfile)
+    date_followed = models.DateField(auto_now_add=True)
 #-------------------------------------------------------------->
 # KIT BUILDER TEMPLATE
 
