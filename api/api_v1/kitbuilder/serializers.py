@@ -78,7 +78,6 @@ class VendorKitSerializer(serializers.ModelSerializer):
 class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
     samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
-    tags = TagSerializer(read_only=True)
 
     class Meta:
         model = KitBuilderPurchase
