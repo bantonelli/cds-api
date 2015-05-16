@@ -3,6 +3,15 @@ from django.conf import settings
 #from django.contrib.auth import get_user_model
 from useraccount.models import User
 AuthUser = settings.AUTH_USER_MODEL
+from amazon_file_field import S3EnabledImageField
+
+
+#-------------------------------------------------------------->
+# UTILITIES
+def upload_profile_image(instance, filename):
+    user_dir = "user_"+str(instance.user.id)
+    #template_name = instance.name.replace(" ", "_").replace("'", "")
+    return "media/user_profiles/" + user_dir + "/images/" + filename
 
 
 # Create your models here.
@@ -14,6 +23,7 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     verified = models.BooleanField(blank=True, default=False)
+    image = S3EnabledImageField(upload_to=upload_profile_image, blank=True)
 
     @property
     def username(self):
