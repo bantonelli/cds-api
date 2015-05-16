@@ -14,4 +14,6 @@ user = User.objects.get(pk=1)
 #
 # email_mixin.send_email(**email_mixin.get_send_email_kwargs(user, 'account_activation'))
 
-print user.profile.samples_purchased
+# print user.profile.samples_purchased
+
+print user.profile.templates_followed.all()
