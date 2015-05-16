@@ -76,12 +76,13 @@ class VendorKitSerializer(serializers.ModelSerializer):
 #-------------------------------------------------------------->
 # KIT BUILDER PURCHASE
 class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
-    samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     user = serializers.CharField(read_only=True, source='user.user.username')
+    # samples = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = KitBuilderPurchase
-        fields = ('id', 'name', 'date_purchased', 'zip_file', 'samples', 'user')
+        fields = ('id', 'name', 'date_purchased', 'zip_file', 'user')
+        # fields = ('id', 'name', 'date_purchased', 'zip_file', 'samples', 'user')
 
 
 #-------------------------------------------------------------->

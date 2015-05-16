@@ -1,5 +1,6 @@
 __author__ = 'brandonantonelli'
 from rest_framework import generics, permissions
+from rest_framework.parsers import JSONParser, MultiPartParser
 from provider.oauth2.models import AccessToken
 from userprofile.models import UserProfile
 from serializers import UserProfilePublicSerializer, UserProfilePrivateSerializer
@@ -24,6 +25,7 @@ class UserProfileDetail(generics.RetrieveUpdateAPIView):
     required_scopes = ['read']
     queryset = UserProfile.objects.all()
     serializer_class = UserProfilePublicSerializer
+    parser_classes = (JSONParser, MultiPartParser)
 
     def get_serializer_class(self, *args, **kwargs):
         user_id = self.kwargs.get(self.lookup_field)
@@ -41,4 +43,5 @@ class UserProfileDetail(generics.RetrieveUpdateAPIView):
             return UserProfilePrivateSerializer
         else:
             return UserProfilePublicSerializer
+
 
