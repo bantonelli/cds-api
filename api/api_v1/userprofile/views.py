@@ -21,14 +21,15 @@ class UserProfileList(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
     def get_queryset(self):
+        model = self.serializer_class.Meta.model
         if self.request.method == 'PATCH':
             request_items = self.request.data.get('request_items')
             if request_items is not None:
-                return UserProfile.objects.filter(id__in=request_items)
+                return model.objects.filter(id__in=request_items)
             else:
-                return UserProfile.objects.all()
+                return model.objects.all()
         else:
-            return UserProfile.objects.all()
+            return model.objects.all()
 
 
 #-------------------------------------------------------------->

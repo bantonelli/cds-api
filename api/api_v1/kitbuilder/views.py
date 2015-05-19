@@ -18,8 +18,23 @@ from djoser.views import OauthUserMixin
 class TagList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     required_scopes = ['read']
-    queryset = Tag.objects.all()
+    # queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    parser_classes = (JSONParser, MultiPartParser,)
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return model.objects.filter(id__in=request_items)
+            else:
+                return model.objects.all()
+        else:
+            return model.objects.all()
 
 
 #-------------------------------------------------------------->
@@ -27,8 +42,23 @@ class TagList(generics.ListAPIView):
 class SamplePreviewList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     required_scopes = ['read']
-    queryset = Sample.objects.all()
+    # queryset = Sample.objects.all()
     serializer_class = SamplePreviewSerializer
+    parser_classes = (JSONParser, MultiPartParser,)
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return model.objects.filter(id__in=request_items)
+            else:
+                return model.objects.all()
+        else:
+            return model.objects.all()
 
 
 class SamplePreviewDetail(generics.RetrieveAPIView):
@@ -45,6 +75,21 @@ class VendorList(generics.ListAPIView):
     required_scopes = ['read']
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
+    parser_classes = (JSONParser, MultiPartParser,)
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return model.objects.filter(id__in=request_items)
+            else:
+                return model.objects.all()
+        else:
+            return model.objects.all()
 
 
 #-------------------------------------------------------------->
@@ -57,6 +102,21 @@ class VendorKitList(generics.ListAPIView):
     required_scopes = ['read']
     queryset = VendorKit.objects.all()
     serializer_class = VendorKitSerializer
+    parser_classes = (JSONParser, MultiPartParser,)
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return model.objects.filter(id__in=request_items)
+            else:
+                return model.objects.all()
+        else:
+            return model.objects.all()
 
 
 class VendorKitDetail(generics.RetrieveAPIView):
@@ -86,14 +146,29 @@ class KitBuilderPurchaseDetail(generics.RetrieveDestroyAPIView):
 class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
     permission_classes = (permissions.IsAuthenticated, )
     required_scopes = ['read']
-    queryset = KitBuilderTemplate.objects.filter(public=True)
+    # queryset = KitBuilderTemplate.objects.filter(public=True)
     serializer_class = KitBuilderTemplateSerializer
-
+    parser_classes = (JSONParser, MultiPartParser,)
 # Grabs the user
 # Use the OAuth User mixin for this
 # checks the user's list of KitBuilderTemplates
 # If the KitBuilderTemplate that they have already exists return an error
 # If not create it and return a success message.
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        model = self.serializer_class.Meta.model
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return model.objects.filter(id__in=request_items, public=True)
+            else:
+                return model.objects.filter(public=True)
+        else:
+            return model.objects.filter(public=True)
+
     def create(self, request, *args, **kwargs):
         serializer = KitBuilderTemplateSerializer(data=request.data)
         user = self.get_current_user(request)
