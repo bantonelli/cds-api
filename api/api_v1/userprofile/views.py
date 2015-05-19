@@ -14,8 +14,21 @@ User = get_user_model()
 class UserProfileList(generics.ListAPIView):
     permission_classes = (permissions.AllowAny, )
     required_scopes = ['read']
-    queryset = UserProfile.objects.all()
     serializer_class = UserProfilePublicSerializer
+    parser_classes = (JSONParser, MultiPartParser,)
+
+    def patch(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def get_queryset(self):
+        if self.request.method == 'PATCH':
+            request_items = self.request.data.get('request_items')
+            if request_items is not None:
+                return UserProfile.objects.filter(id__in=request_items)
+            else:
+                return UserProfile.objects.all()
+        else:
+            return UserProfile.objects.all()
 
 
 #-------------------------------------------------------------->
