@@ -203,3 +203,13 @@ class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
     #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=True)
     #     else:
     #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=partial)
+
+
+#-------------------------------------------------------------->
+# KIT BUILDER TEMPLATE FOLLOWERS
+class KitBuilderFollowerList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = FollowerSerializer
+    queryset = Follower.objects.all()
+    # required_scopes = ['read']
+    parser_classes = (JSONParser, MultiPartParser,)

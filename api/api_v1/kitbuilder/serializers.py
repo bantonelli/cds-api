@@ -1,7 +1,7 @@
 __author__ = 'brandonantonelli'
 # from django.conf import settings
 from rest_framework import serializers
-from kitbuilder.kitbuilder_v1.models import Tag, Sale, Price, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate
+from kitbuilder.kitbuilder_v1.models import Tag, Sale, Price, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate, Follower
 
 
 #-------------------------------------------------------------->
@@ -86,7 +86,7 @@ class KitBuilderPurchaseSerializer(serializers.ModelSerializer):
 
 
 #-------------------------------------------------------------->
-# KIT BUILDER PURCHASE
+# KIT BUILDER TEMPLATE
 class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     user = serializers.CharField(read_only=True, source='user.user.username')
@@ -107,5 +107,11 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
         read_only_fields = ('times_added', 'last_updated', 'featured',)
 
 
+#-------------------------------------------------------------->
+# KIT BUILDER TEMPLATE FOLLOWERS
+class FollowerSerializer(serializers.ModelSerializer):
 
-
+    class Meta:
+        model = Follower
+        fields = ('id', 'template', 'user', 'date_followed',)
+        read_only_fields = ('date_followed',)

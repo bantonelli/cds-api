@@ -207,6 +207,9 @@ class Follower(models.Model):
     template = models.ForeignKey(KitBuilderTemplate)
     user = models.ForeignKey(UserProfile)
     date_followed = models.DateField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.user.username + "-follows-" + self.template.name
 #-------------------------------------------------------------->
 # KIT BUILDER TEMPLATE
 
