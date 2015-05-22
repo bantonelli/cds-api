@@ -28,4 +28,4 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'image', 'created_at', 'updated_at', 'public_kitbuilder_templates')
+        fields = ('id', 'username', 'image', 'created_at', 'updated_at', 'public_kitbuilder_templates', 'templates_followed')
