@@ -191,7 +191,7 @@ class KitBuilderTemplate(models.Model):
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    followers = models.ManyToManyField(
+    users_following = models.ManyToManyField(
         UserProfile,
         blank=True,
         related_name="templates_followed",
