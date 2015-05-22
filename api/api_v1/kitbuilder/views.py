@@ -187,7 +187,7 @@ class KitBuilderTemplateList(generics.ListCreateAPIView, OauthUserMixin):
 
 
 class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated, IsTemplateOwner, )
+    permission_classes = (permissions.IsAuthenticated, )
     serializer_class = KitBuilderTemplateSerializer
     queryset = KitBuilderTemplate.objects.all()
     # required_scopes = ['read']
@@ -198,11 +198,13 @@ class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
     # If you send a patch request you can do a partial update to the model
     # Also has Object level permission using the IsTemplateOwner Permission
 
-    # def get_serializer(self, instance=None, data=None, partial=False):
-    #     if self.request.method == 'PUT':
-    #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=True)
-    #     else:
-    #         return KitBuilderTemplateSerializer(instance=instance, data=data, partial=partial)
+    def get_serializer_class(self):
+        current_template = self.get_object()
+        template_permission = IsTemplateOwner()
+        if template_permission.has_object_permission(self.request, None, current_template):
+            return KitBuilderTemplateSerializer
+        else:
+            return KitBuilderTemplatePublicSerializer
 
 
 #-------------------------------------------------------------->

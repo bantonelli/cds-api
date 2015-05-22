@@ -107,6 +107,14 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
         read_only_fields = ('times_added', 'last_updated', 'featured',)
 
 
+class KitBuilderTemplatePublicSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = KitBuilderTemplate
+        fields = ('id', 'name', 'last_updated', 'users_following', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
+        read_only_fields = ('name', 'last_updated', 'users_following', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
+
+
 #-------------------------------------------------------------->
 # KIT BUILDER TEMPLATE FOLLOWERS
 class FollowerSerializer(serializers.ModelSerializer):

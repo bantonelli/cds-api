@@ -2,6 +2,7 @@ __author__ = 'brandonantonelli'
 
 from rest_framework import permissions
 from provider.oauth2.models import AccessToken
+from kitbuilder.kitbuilder_v1.models import KitBuilderTemplate
 
 class IsKitOwner(permissions.BasePermission):
     """
@@ -16,6 +17,7 @@ class IsTemplateOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         template_id = obj.id
+        template = KitBuilderTemplate.objects.get(pk=template_id)
         if request.user:
             user = request.user
             users_templates = user.profile.kitbuilder_templates.all()
