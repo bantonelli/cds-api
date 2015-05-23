@@ -17,7 +17,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'image', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'kitbuilder_purchases', 'kitbuilder_templates', 'samples_purchased', 'templates_followed')
+        fields = ('id', 'username', 'image', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'kitbuilder_purchases', 'kitbuilder_templates', 'samples_purchased', 'templates_followed')
         read_only_fields = ('last_4_digits', 'stripe_id')
 
 
@@ -29,3 +29,4 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('id', 'username', 'image', 'created_at', 'updated_at', 'public_kitbuilder_templates', 'templates_followed')
+        read_only_fields = ('id', 'username', 'image', 'created_at', 'updated_at', 'public_kitbuilder_templates', 'templates_followed')
