@@ -34,7 +34,11 @@ class UserProfile(models.Model):
 
     @property
     def public_kitbuilder_templates(self):
-        return self.kitbuilder_templates.filter(public=True)
+        public_templates = self.kitbuilder_templates.filter(public=True)
+        pub_template_ids = []
+        for template in public_templates:
+            pub_template_ids.append(template.id)
+        return pub_template_ids
 
     @property
     def samples_purchased(self):
