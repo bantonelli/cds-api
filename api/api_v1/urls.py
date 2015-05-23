@@ -21,7 +21,7 @@ urlpatterns = patterns('',
                         # # url(r'^api/samples/endproducts/$', views.SampleList.as_view()),
                         # # url(r'^api/samples/endproducts/(?P<pk>[0-9]+)/$', views.SampleDetail.as_view()),
                         url(r'^kitbuilder/purchases/(?P<pk>[0-9]+)/$', KitBuilderPurchaseDetail.as_view()),
-                        url(r'^kitbuilder/followers/$', KitBuilderFollowerList.as_view()),
+                        url(r'^kitbuilder/followers/$', TemplateFollowList.as_view()),
                         # purchase view requires csrf token.
                         url(r'^kitbuilder/purchase/$', views.KitBuilderPaymentView.as_view()),
                        )

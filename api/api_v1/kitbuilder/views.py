@@ -209,9 +209,9 @@ class KitBuilderTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #-------------------------------------------------------------->
 # KIT BUILDER TEMPLATE FOLLOWERS
-class KitBuilderFollowerList(generics.ListCreateAPIView):
+class TemplateFollowList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = FollowerSerializer
-    queryset = Follower.objects.all()
+    serializer_class = TemplateFollowSerializer
+    queryset = TemplateFollow.objects.all()
     # required_scopes = ['read']
     parser_classes = (JSONParser, MultiPartParser,)
