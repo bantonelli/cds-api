@@ -1,7 +1,7 @@
 __author__ = 'brandonantonelli'
 # from django.conf import settings
 from rest_framework import serializers
-from kitbuilder.kitbuilder_v1.models import Tag, Sale, Price, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate, Follower
+from kitbuilder.kitbuilder_v1.models import Tag, Sale, Price, Vendor, VendorKit, Sample, KitBuilderPurchase, KitBuilderTemplate, TemplateFollow
 
 
 #-------------------------------------------------------------->
@@ -117,9 +117,9 @@ class KitBuilderTemplatePublicSerializer(serializers.ModelSerializer):
 
 #-------------------------------------------------------------->
 # KIT BUILDER TEMPLATE FOLLOWERS
-class FollowerSerializer(serializers.ModelSerializer):
+class TemplateFollowSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Follower
+        model = TemplateFollow
         fields = ('id', 'template', 'user', 'date_followed',)
         read_only_fields = ('date_followed',)
