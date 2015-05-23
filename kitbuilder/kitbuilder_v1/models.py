@@ -195,7 +195,7 @@ class KitBuilderTemplate(models.Model):
         UserProfile,
         blank=True,
         related_name="templates_followed",
-        through="Follower",
+        through="TemplateFollow",
         through_fields=('template', 'user')
     )
 
@@ -203,7 +203,7 @@ class KitBuilderTemplate(models.Model):
         return self.name
 
 
-class Follower(models.Model):
+class TemplateFollow(models.Model):
     template = models.ForeignKey(KitBuilderTemplate)
     user = models.ForeignKey(UserProfile)
     date_followed = models.DateField(auto_now_add=True)
