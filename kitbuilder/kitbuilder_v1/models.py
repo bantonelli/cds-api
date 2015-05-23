@@ -94,6 +94,7 @@ class VendorKit (CommonInfo):
     # image = models.ImageField(upload_to=upload_vendor_kit_image, storage=S3Storage(get_bucket()))
     image = S3EnabledImageField(upload_to=upload_vendor_kit_image)
     description = HTMLField(blank=True) # This should be a WYSIWYG field
+    date_created = models.DateField(auto_now_add=True, blank=True, null=True)
     sample_count = models.IntegerField(blank=True, null=True)
     commission_rate = models.DecimalField(max_digits=10, decimal_places=2)
     vendor = models.ForeignKey(Vendor)

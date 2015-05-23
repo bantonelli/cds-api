@@ -70,7 +70,7 @@ class VendorKitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VendorKit
-        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'description', 'sample_count', 'commission_rate', 'vendor', 'tags', 'price', 'sale', 'samples')
+        fields = ('id', 'name', 'active', 'on_sale', 'soundcloud', 'image', 'description', 'date_created', 'sample_count', 'commission_rate', 'vendor', 'tags', 'price', 'sale', 'samples')
 
 
 #-------------------------------------------------------------->
