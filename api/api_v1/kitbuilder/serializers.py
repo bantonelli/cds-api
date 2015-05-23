@@ -103,16 +103,16 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = KitBuilderTemplate
-        fields = ('id', 'name', 'last_updated', 'users_following', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
-        read_only_fields = ('times_added', 'last_updated', 'featured',)
+        fields = ('id', 'name', 'last_updated', 'users_following', 'follows', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
+        read_only_fields = ('follows', 'last_updated', 'featured',)
 
 
 class KitBuilderTemplatePublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = KitBuilderTemplate
-        fields = ('id', 'name', 'last_updated', 'users_following', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
-        read_only_fields = ('name', 'last_updated', 'users_following', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
+        fields = ('id', 'name', 'last_updated', 'users_following', 'follows', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
+        read_only_fields = ('name', 'last_updated', 'users_following', 'follows', 'description', 'featured', 'public', 'image', 'user', 'samples', 'tags')
 
 
 #-------------------------------------------------------------->

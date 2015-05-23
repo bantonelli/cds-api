@@ -204,8 +204,8 @@ class KitBuilderTemplate(models.Model):
 
 
 class TemplateFollow(models.Model):
-    template = models.ForeignKey(KitBuilderTemplate)
-    user = models.ForeignKey(UserProfile)
+    template = models.ForeignKey(KitBuilderTemplate, related_name="follows")
+    user = models.ForeignKey(UserProfile, related_name="template_follows")
     date_followed = models.DateField(auto_now_add=True)
 
     def __unicode__(self):
