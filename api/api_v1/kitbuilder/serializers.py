@@ -91,6 +91,7 @@ class KitBuilderTemplateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     # user = serializers.CharField(read_only=True, source='user.user.username')
     image = serializers.ImageField(allow_empty_file=True, required=False, max_length=None)
+    tags = serializers.PrimaryKeyRelatedField(required=False, queryset=Tag.objects.all(), many=True)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
