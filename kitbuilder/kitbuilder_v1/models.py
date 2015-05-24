@@ -124,7 +124,7 @@ class Sample(models.Model):
     CLAP = 'Clap'
     OVERHEAD = 'Overhead'
     PERCUSSION = 'Percussion'
-    SOUNDFX = 'Sound FX'
+    SOUNDFX = 'Effect'
     LOOP = 'Loop'
     SAMPLE_TYPE_CHOICES = (
         (KICK, 'Kick'),
