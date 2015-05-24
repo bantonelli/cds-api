@@ -132,7 +132,7 @@ class Sample(models.Model):
         (CLAP, 'Clap'),
         (OVERHEAD, 'Overhead'),
         (PERCUSSION, 'Percussion'),
-        (SOUNDFX, 'Sound FX'),
+        (SOUNDFX, 'Effect'),
         (LOOP, 'Loop'),
     )
     name = models.CharField(max_length=50)
