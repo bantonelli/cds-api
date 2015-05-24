@@ -85,7 +85,7 @@ class S3Storage(FileSystemStorage):
 class S3EnabledFileField(models.FileField):
     def __init__(self, bucket=settings.AWS_STORAGE_BUCKET_NAME, verbose_name=None, name=None, upload_to='', storage=None, **kwargs):
         if settings.USE_AMAZON_S3:
-            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, host='s3.amazonaws.com')
             if not self.connection.lookup(bucket):
                 self.connection.create_bucket(bucket)
             self.bucket = self.connection.get_bucket(bucket)
@@ -96,7 +96,7 @@ class S3EnabledFileField(models.FileField):
 class S3EnabledImageField(models.ImageField):
     def __init__(self, bucket=settings.AWS_STORAGE_BUCKET_NAME, verbose_name=None, name=None, width_field=None, height_field=None, **kwargs):
         if settings.USE_AMAZON_S3:
-            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+            self.connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, host='s3.amazonaws.com')
             if not self.connection.lookup(bucket):
                 self.connection.create_bucket(bucket)
             self.bucket = self.connection.get_bucket(bucket)

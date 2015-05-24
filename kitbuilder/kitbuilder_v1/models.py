@@ -15,7 +15,7 @@ from boto.s3.connection import S3Connection
 def get_bucket():
     if settings.USE_AMAZON_S3:
         bucket = settings.AWS_STORAGE_BUCKET_NAME
-        connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        connection = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, host='s3.amazonaws.com')
         if not connection.lookup(bucket):
             connection.create_bucket(bucket)
         bucket = connection.get_bucket(bucket)

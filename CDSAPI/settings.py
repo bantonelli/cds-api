@@ -22,6 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 from django.utils import crypto
 SECRET_KEY = os.environ.get("SECRET_KEY", crypto.get_random_string(50, "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"))
 
+os.environ['S3_USE_SIGV4'] = 'True'
+
 # Application definition
 
 INSTALLED_APPS = (
