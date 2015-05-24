@@ -64,7 +64,7 @@ class SampleSerializer(serializers.ModelSerializer):
 class VendorKitSerializer(serializers.ModelSerializer):
     # samples = SamplePreviewSerializer(many=True, read_only=True)
     image = serializers.ReadOnlyField(source='image.url')
-    tags = TagSerializer(read_only=True)
+    tags = TagSerializer(read_only=True, many=True)
     price = PriceSerializer(read_only=True)
     sale = SaleSerializer(read_only=True)
 
