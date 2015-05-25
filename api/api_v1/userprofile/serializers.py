@@ -7,7 +7,7 @@ from api.api_v1.kitbuilder.serializers import KitBuilderPurchaseSerializer, KitB
 # USER PROFILE
 class UserProfilePrivateSerializer(serializers.ModelSerializer):
     # Needs Object level permission
-    # kitbuilder_purchases = KitBuilderPurchaseSerializer(many=True, read_only=True)
+    kitbuilder_purchases = KitBuilderPurchaseSerializer(many=True, read_only=True)
     kitbuilder_templates = KitBuilderTemplateSerializer(many=True, read_only=True)
 
     def update(self, instance, validated_data):
