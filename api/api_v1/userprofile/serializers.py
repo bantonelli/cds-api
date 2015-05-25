@@ -8,6 +8,7 @@ from api.api_v1.kitbuilder.serializers import KitBuilderPurchaseSerializer, KitB
 class UserProfilePrivateSerializer(serializers.ModelSerializer):
     # Needs Object level permission
     # kitbuilder_purchases = KitBuilderPurchaseSerializer(many=True, read_only=True)
+    kitbuilder_templates = KitBuilderTemplateSerializer(many=True, read_only=True)
 
     def update(self, instance, validated_data):
         instance.kitbuilder_templates = validated_data.get('kitbuilder_templates', instance.kitbuilder_templates)
@@ -17,7 +18,7 @@ class UserProfilePrivateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'image', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'kitbuilder_purchases', 'kitbuilder_templates', 'samples_purchased', 'templates_followed', "template_follows")
+        fields = ('id', 'username', 'image', 'last_4_digits', 'stripe_id', 'created_at', 'updated_at', 'kitbuilder_purchases', 'kitbuilder_templates', 'public_kitbuilder_templates', 'samples_purchased', 'templates_followed', "template_follows")
         read_only_fields = ('last_4_digits', 'stripe_id')
 
 
