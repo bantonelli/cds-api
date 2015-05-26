@@ -188,7 +188,7 @@ class KitBuilderTemplate(models.Model):
     featured = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
     # image = models.ImageField(upload_to=upload_template_image, storage=S3Storage(get_bucket()), blank=True, null=True)
-    image = S3EnabledImageField(upload_to=upload_template_image, blank=True)
+    image = S3EnabledImageField(upload_to=upload_template_image, blank=True, null=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_templates')
     samples = models.ManyToManyField(Sample, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
