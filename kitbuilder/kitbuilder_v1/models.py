@@ -23,6 +23,7 @@ def get_bucket():
 
 User = settings.AUTH_USER_MODEL
 
+
 # This class is used to create the file system storage used for files on OS.
 # It checks if the file exists and overwrites the file if it exists.
 class OverwriteStorage(FileSystemStorage):
@@ -264,3 +265,6 @@ def kitbuilder_template_delete(sender, instance, **kwargs):
 # DROP TABLE "kitbuilder_v1_tag" CASCADE;
 # DROP TABLE "kitbuilder_v1_sale" CASCADE;
 # DROP TABLE "kitbuilder_v1_price" CASCADE;
+# DROP TABLE "kitbuilder_v1_follower" CASCADE;
+# DROP TABLE "kitbuilder_v1_templatefollow" CASCADE;
+
