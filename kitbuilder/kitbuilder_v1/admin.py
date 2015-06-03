@@ -73,4 +73,11 @@ def before_import(self, dataset, dry_run):
         if 'id' not in dataset.headers:
             dataset.headers.append('id')
 
+- Workflow:
+    - New samples should be imported without their id's
+    - If you want to change samples:
+        - export the samples to spreadsheet
+        - change what you need to change
+        - leave the id numbers in the spreadsheet so that the system knows to update existing records.
+
 """
