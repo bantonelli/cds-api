@@ -224,8 +224,10 @@ from django.dispatch.dispatcher import receiver
 @receiver(pre_delete, sender=Sample)
 def sample_delete(sender, instance, **kwargs):
     # Pass false so FileField doesn't save the model.
-    instance.preview.delete(False)
-    instance.wav.delete(False)
+    pass
+    # At some point - have to update this signal to delete the file on Amazon automatically
+        # instance.preview.delete(False)
+        # instance.wav.delete(False)
 
 
 @receiver(pre_delete, sender=VendorKit)
