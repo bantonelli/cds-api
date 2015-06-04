@@ -81,7 +81,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         #u'foo@example.com'
 
 
-
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -98,13 +97,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     # def save(self, **kwargs):
     #     self.object = User.objects.create_user(**dict(self.init_data.items()))
     #     return self.object
-    def save(self, **kwargs):
-        # args = dict(self.initial_data.items())
-        email = self.validated_data['email']
-        username = self.validated_data['username']
-        password = self.validated_data['password']
-        self.object = User.objects.create_user(email=email, username=username, password=password)
-        return self.object
+    # def save(self, **kwargs):
+    #     # args = dict(self.initial_data.items())
+    #     email = self.validated_data['email']
+    #     username = self.validated_data['username']
+    #     password = self.validated_data['password']
+    #     self.object = User.objects.create_user(email=email, username=username, password=password)
+    #     return self.object
 
 
 class UserRegistrationWithAuthTokenSerializer(UserRegistrationSerializer):
