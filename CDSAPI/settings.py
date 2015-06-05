@@ -176,7 +176,7 @@ CORS_ALLOW_METHODS = (
 )
 
 CORS_EXPOSE_HEADERS = (
-    'set-cookie'
+    'Set-Cookie'
 )
 
 #CORS_REPLACE_HTTPS_REFERER: specify whether to replace

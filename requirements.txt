@@ -4,7 +4,7 @@ dj-database-url==0.3.0
 dj-static==0.0.6
 Django==1.8
 django-braces==1.4.0
-django-cors-headers==1.0.0
+django-cors-headers==1.1.0
 django-herokuapp==0.9.19
 git+https://github.com/bmihelac/django-import-export.git#egg=django-import-export
 django-oauth-plus==2.2.6
@@ -20,6 +20,7 @@ djangorestframework-oauth==1.0.1
 djoser==0.1.0
 gunicorn==19.3.0
 httplib2==0.9.1
+inflection==0.3.1
 oauth2==1.5.211
 oauthlib==0.7.2
 Pillow==2.8.1
