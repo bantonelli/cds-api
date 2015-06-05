@@ -17,7 +17,7 @@ from django.contrib.auth.models import (
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
+    def create(self, email, username, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -39,7 +39,7 @@ class MyUserManager(BaseUserManager):
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
-        user = self.create_user(email,
+        user = self.create(email,
                                 password=password,
                                 username=username
         )
