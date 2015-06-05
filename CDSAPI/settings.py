@@ -176,6 +176,7 @@ CORS_ALLOW_METHODS = (
 )
 
 CORS_EXPOSE_HEADERS = (
+    u"*",
     u"Set-Cookie",
 )
 
