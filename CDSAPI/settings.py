@@ -156,7 +156,7 @@ REST_FRAMEWORK = {
 # NOTE: HAVE TO CHANGE line 491 of provider/views.py in site-packages to use content_type instead of mime_type for this
 # to work in Django 1.7 and later.
 # curl -X POST -d 'client_id=0f4d3a53f1db12be80cd&client_secret=d5fdf1e1a0fdc057844dfebe5f795cfe7d2d187e&grant_type=password&username=maddenmoment@gmail.com&password=123456' 'http://127.0.0.1:8000/oauth2/access_token'
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_CREDENTIALS = True
 
