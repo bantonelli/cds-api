@@ -167,12 +167,12 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 CORS_ALLOW_METHODS = (
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
+    u"GET",
+    u"POST",
+    u"PUT",
+    u"PATCH",
+    u"DELETE",
+    u"OPTIONS",
 )
 
 CORS_EXPOSE_HEADERS = (
