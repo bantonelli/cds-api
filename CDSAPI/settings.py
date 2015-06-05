@@ -187,6 +187,11 @@ CORS_EXPOSE_HEADERS = (
 CORS_REPLACE_HTTPS_REFERER = True
 
 #-------------------------------------------------------------->
+# CSRF Settings
+
+CSRF_COOKIE_SECURE = True
+
+#-------------------------------------------------------------->
 # DJOSER/AUTHENTICATION SETTINGS
 AUTH_USER_MODEL = 'useraccount.User'
 
