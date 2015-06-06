@@ -165,6 +165,7 @@ class KitBuilderPaymentView(View):
             # Upload the kitbuilder_purchase to S3 and create download link for it.
         # email kit to user --> DONE
             payment_success = True
+            print payment_success
             order_number = charge.id
             try:
                 sample_objects = []
@@ -216,6 +217,7 @@ class KitBuilderPaymentView(View):
 
                 imz.writetofile(zip_file)
                 zip_created = True
+                print zip_created
                 try:
                     # Create Custom Kit object, associate with User Profile and Zip file
                     user_profile = UserProfile.objects.get(pk=user_id)
@@ -229,19 +231,24 @@ class KitBuilderPaymentView(View):
                     kb_purchase.save()
                     purchased_kit_id = kb_purchase.id
                 except:
-                    return "Custom Kit Creation Error"
+                    print "Kb Purchase Not created"
+                    # return "Custom Kit Creation Error"
+                    pass
                 try:
                     email = user.email
                     mail = EmailMessage("Your Recent KitBuilder Purchase", "Here is your custom Kit", "bant7205@gmail.com", [email])
-                    mail.attach_file(zip_file)
+                    # mail.attach_file(imz)
                     mail.send()
                     mail_sent = True
                 except:
                     mail_sent = False
-                    return "Attachment error"
+                    print "Mail not being sent"
+                    # return "Attachment error"
+                    pass
             except:
                 zip_created = False
-                return "Zip File Error"
+                pass
+                # return "Zip File Error"
 
         result.append({
             "purchased_kit_id": purchased_kit_id,
