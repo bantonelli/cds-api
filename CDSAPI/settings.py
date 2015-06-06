@@ -55,7 +55,7 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'corsheaders.middleware.CorsPostCsrfMiddleware',
+    # 'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -184,12 +184,12 @@ CORS_EXPOSE_HEADERS = (
 # the HTTP_REFERER header if CORS checks pass so that CSRF django middleware checks will work with https
     # Note: With this feature enabled, you also need to add the corsheaders.middleware.CorsPostCsrfMiddleware
     # after django.middleware.csrf.CsrfViewMiddleware to undo the header replacement
-CORS_REPLACE_HTTPS_REFERER = True
+CORS_REPLACE_HTTPS_REFERER = False
 
 #-------------------------------------------------------------->
 # CSRF Settings
 
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = False
 
 #-------------------------------------------------------------->
 # DJOSER/AUTHENTICATION SETTINGS
