@@ -11,6 +11,7 @@ import json
 from django.http import HttpResponse
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist
+from django.middleware.csrf import get_token
 
 
 User = get_user_model()
@@ -40,7 +41,12 @@ class OauthUserMixin():
 class SetCSRFView(View):
 
     def get(self, request):
-        return HttpResponse("cookie set")
+        token = get_token(request)
+        # print token
+        data = {"csrftoken": token}
+        resp = HttpResponse(content_type="application/json")
+        json.dump(data, resp)
+        return resp
 
 
 class ResendActivationEmailView(View, utils.SendEmailViewMixin, OauthUserMixin):
