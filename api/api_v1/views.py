@@ -1,9 +1,11 @@
 __author__ = 'brandonantonelli'
 import os
 import zipfile
+import urllib2
 import ast
 import json
 import stripe
+from django.core.files import File
 from django.http import HttpResponse
 from django.views.generic import View
 from django.conf import settings
@@ -18,6 +20,38 @@ from .userprofile.views import UserProfile
 # from django.core.context_processors import csrf
 
 User = get_user_model()
+
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
+
+
+class InMemoryZip(object):
+    def __init__(self):
+        # Create the in-memory file-like object
+        self.in_memory_data = StringIO()
+        # Create the in-memory zipfile
+        self.in_memory_zip = zipfile.ZipFile(
+            self.in_memory_data, "w", zipfile.ZIP_DEFLATED, False)
+        self.in_memory_zip.debug = 3
+
+    def append(self, filename_in_zip, file_contents):
+        '''Appends a file with name filename_in_zip and contents of
+        file_contents to the in-memory zip.'''
+        self.in_memory_zip.writestr(filename_in_zip, file_contents)
+        return self   # so you can daisy-chain
+
+    def writetofile(self, filename):
+        '''Writes the in-memory zip to a file.'''
+        # Mark the files as having been created on Windows so that
+        # Unix permissions are not inferred as 0000
+        for zfile in self.in_memory_zip.filelist:
+            zfile.create_system = 0
+        self.in_memory_zip.close()
+        with open(filename, 'wb') as f:
+            f.write(self.in_memory_data.getvalue())
 
 
 # Post request does the following:
@@ -127,7 +161,8 @@ class KitBuilderPaymentView(View):
             payment_success = False
         else:
         # build kit zip file --> DONE
-        # create custom kit object and associate with User --> DONE
+        # create kitbuilder_purchase object and associate with User --> DONE
+            # Upload the kitbuilder_purchase to S3 and create download link for it.
         # email kit to user --> DONE
             payment_success = True
             order_number = charge.id
@@ -140,41 +175,59 @@ class KitBuilderPaymentView(View):
                     except ObjectDoesNotExist:
                         pass
                 #Build a path for the zip file that is inside of a folder that holds user-specific custom kit zips
-                zip_subdir = kit_name
-                zip_filepath = os.path.join(settings.MEDIA_ROOT, "kitbuilder_purchases", "user_"+str(user_id))
+                # zip_subdir = kit_name
+                # zip_filepath = os.path.join("media", "kitbuilder_purchases", "user_"+str(user_id))
+                    #***** NEW --> let storage build the path.
 
                 # If the user's zip file folder doesn't exist create one
-                if not os.path.exists(zip_filepath):
-                    os.makedirs(zip_filepath)
+                # if not os.path.exists(zip_filepath):
+                #     os.makedirs(zip_filepath)
+                    #***** NEW --> S3 builds new file directories if they don't exist.
 
                 # Create the location for the zip file and the extension
-                zip_file = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
+                # zip_file = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
                 # Build the media hosted URL path for the zip file (where it can be downloaded)
-                zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "kitbuilder_purchases", "user_"+str(user_id), "%s.zip" % zip_subdir)
+                # zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "kitbuilder_purchases", "user_"+str(user_id), "%s.zip" % zip_subdir)
                 # The zip compressor makes an open zip file buffer ready to be written to.
-                zf = zipfile.ZipFile(zip_file, mode='w')
+                    #***** NEW --> Make zip file be a string with .zip extension.
+                # zip_file = kit_name + ".zip"
+                # zf = zipfile.ZipFile(zip_file, mode='w')
 
-                for sample in sample_objects:
+                # for sample in sample_objects:
                     # Calculate path for file in zip
-                    fpath = sample.wav.url[1:]
-                    fpath = os.path.join(settings.BASE_DIR, fpath)
-                    fname = os.path.basename(fpath)
-                    zip_path = os.path.join(zip_subdir, sample.type, fname)
+                    # fpath = sample.wav.url[1:]
+                    # fpath = os.path.join(settings.BASE_DIR, fpath)
+                    # fname = os.path.basename(fpath)
+                    # zip_path = os.path.join(zip_subdir, sample.type, fname)
                     # Add file, at correct path
-                    zf.write(fpath, zip_path)
+                        #fpath is the path to the wav.
+                    # zf.write(fpath, zip_path)
 
                 # Must close zip for all contents to be written
-                zf.close()
+                # zf.close()
+
+                imz = InMemoryZip()
+                zip_file = kit_name + ".zip"
+                for sample in sample_objects:
+                    sample_url = sample.s3_wav_url
+                    sample_name = sample.name + ".wav"
+                    response = urllib2.urlopen(sample_url)
+                    imz.append(sample_name, response.read())
+
+                imz.writetofile(zip_file)
                 zip_created = True
                 try:
                     # Create Custom Kit object, associate with User Profile and Zip file
                     user_profile = UserProfile.objects.get(pk=user_id)
-                    custom_kit = KitBuilderPurchase(name=kit_name, user=user_profile, zip_file=zip_media_path)
-                    custom_kit.save()
+                    kb_purchase = KitBuilderPurchase(name=kit_name, user=user_profile)
+                    with open(zip_file, 'r') as f:
+                        zip_to_upload = File(f)
+                    kb_purchase.zip_file.save(zip_file, zip_to_upload, True)
+                    kb_purchase.save()
                     # Associate samples with custom kit object
-                    custom_kit.samples = sample_objects
-                    custom_kit.save()
-                    purchased_kit_id = custom_kit.id
+                    kb_purchase.samples = sample_objects
+                    kb_purchase.save()
+                    purchased_kit_id = kb_purchase.id
                 except:
                     return "Custom Kit Creation Error"
                 try:

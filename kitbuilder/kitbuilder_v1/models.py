@@ -5,7 +5,7 @@ from datetime import date
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from tinymce.models import HTMLField
-from amazon_file_field import S3Storage, S3EnabledImageField
+from amazon_file_field import S3Storage, S3EnabledImageField, S3EnabledFileField
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 #-------------------------------------------------------------->
@@ -160,10 +160,23 @@ class Sample(models.Model):
 #-------------------------------------------------------------->
 # KIT BUILDER PURCHASE
 
+
+# doc = UploadedFile()
+# with open(filepath, 'rb') as doc_file:
+#    doc.document.save(filename, File(doc_file), save=True)
+# doc.save()
+# "media", "kitbuilder_purchases", "user_"+str(user_id)
+
+def upload_kitbuilder_purchase_zip(instance, filename):
+    # kit_name = instance.name.replace(" ", "_").replace("'", "")
+    user = instance.user
+    return "media/kitbuilder_purchases/user_" + user.id + "/" + filename
+
+
 class KitBuilderPurchase(models.Model):
     name = models.CharField(max_length=100)
     date_purchased = models.DateField(auto_now_add=True)
-    zip_file = models.FilePathField(blank=True, null=True, max_length=250) # Change this to URL FIELD and ADD COMPUTED PROPERTY
+    zip_file = S3EnabledFileField(blank=True, null=True, upload_to=upload_kitbuilder_purchase_zip) # Change this to URL FIELD and ADD COMPUTED PROPERTY
     samples = models.ManyToManyField(Sample, blank=True)
     user = models.ForeignKey(UserProfile, related_name='kitbuilder_purchases')
 
