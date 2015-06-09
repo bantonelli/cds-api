@@ -104,9 +104,9 @@ class KitBuilderPaymentView(View):
             json.dump(result, resp)
             return resp
 
-        users_custom_kits = user.profile.custom_kits.all()
-        if users_custom_kits.filter(name=kit_name).exists():
-            result.append({"data_error": "You already have a custom kit with that name!"})
+        user_purchases = user.profile.kitbuilder_purchases.all()
+        if user_purchases.filter(name=kit_name).exists():
+            result.append({"data_error": "You have already purchased a template with that name!"})
             resp = HttpResponse(content_type="application/json")
             json.dump(result, resp)
             return resp
