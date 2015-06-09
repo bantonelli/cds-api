@@ -209,8 +209,10 @@ class KitBuilderPaymentView(View):
                 for sample in sample_objects:
                     sample_url = sample.s3_wav_url
                     sample_name = sample.name + ".wav"
+                    sample_sub_path = sample.type + 's'
+                    zip_path = os.path.join(kit_name, sample_sub_path, sample_name)
                     response = urllib2.urlopen(sample_url)
-                    imz.append(sample_name, response.read())
+                    imz.append(zip_path, response.read())
 
                 imz.writetofile(zip_file)
                 zip_created = True
