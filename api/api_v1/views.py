@@ -178,33 +178,30 @@ class KitBuilderPaymentView(View):
                 #Build a path for the zip file that is inside of a folder that holds user-specific custom kit zips
                 # zip_subdir = kit_name
                 # zip_filepath = os.path.join("media", "kitbuilder_purchases", "user_"+str(user_id))
-                    #***** NEW --> let storage build the path.
-
-                # If the user's zip file folder doesn't exist create one
+                #
+                # # If the user's zip file folder doesn't exist create one
                 # if not os.path.exists(zip_filepath):
                 #     os.makedirs(zip_filepath)
-                    #***** NEW --> S3 builds new file directories if they don't exist.
-
-                # Create the location for the zip file and the extension
+                #
+                # # Create the location for the zip file and the extension
                 # zip_file = os.path.join(zip_filepath, "%s.zip" % zip_subdir)
-                # Build the media hosted URL path for the zip file (where it can be downloaded)
+                # # Build the media hosted URL path for the zip file (where it can be downloaded)
                 # zip_media_path = os.path.join(settings.MEDIA_URL[0:-1], "kitbuilder_purchases", "user_"+str(user_id), "%s.zip" % zip_subdir)
-                # The zip compressor makes an open zip file buffer ready to be written to.
-                    #***** NEW --> Make zip file be a string with .zip extension.
+                # # The zip compressor makes an open zip file buffer ready to be written to.
                 # zip_file = kit_name + ".zip"
                 # zf = zipfile.ZipFile(zip_file, mode='w')
-
+                #
                 # for sample in sample_objects:
-                    # Calculate path for file in zip
-                    # fpath = sample.wav.url[1:]
-                    # fpath = os.path.join(settings.BASE_DIR, fpath)
-                    # fname = os.path.basename(fpath)
-                    # zip_path = os.path.join(zip_subdir, sample.type, fname)
-                    # Add file, at correct path
-                        #fpath is the path to the wav.
-                    # zf.write(fpath, zip_path)
-
-                # Must close zip for all contents to be written
+                #     # Calculate path for file in zip
+                #     fpath = sample.wav.url[1:]
+                #     fpath = os.path.join(settings.BASE_DIR, fpath)
+                #     fname = os.path.basename(fpath)
+                #     zip_path = os.path.join(zip_subdir, sample.type, fname)
+                #     # Add file, at correct path
+                #     #     fpath is the path to the wav.
+                #     zf.write(fpath, zip_path)
+                #
+                # # Must close zip for all contents to be written
                 # zf.close()
 
                 imz = InMemoryZip()
@@ -237,7 +234,7 @@ class KitBuilderPaymentView(View):
                 try:
                     email = user.email
                     mail = EmailMessage("Your Recent KitBuilder Purchase", "Here is your custom Kit", "bant7205@gmail.com", [email])
-                    # mail.attach_file(imz)
+                    mail.attach_file(zip_file)
                     mail.send()
                     mail_sent = True
                 except:
@@ -245,6 +242,8 @@ class KitBuilderPaymentView(View):
                     print "Mail not being sent"
                     # return "Attachment error"
                     pass
+                # Delete the local zip file after it is sent.
+                os.remove(zip_file)
             except:
                 zip_created = False
                 pass
