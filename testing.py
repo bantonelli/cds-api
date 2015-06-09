@@ -19,10 +19,28 @@ __author__ = 'brandonantonelli'
 
 # print user.profile.samples_purchased
 
-from kitbuilder.kitbuilder_v1.models import Sample
+# from kitbuilder.kitbuilder_v1.models import Sample
+#
+# sample = Sample.objects.get(pk=1)
+#
+# import urllib
+#
+# urllib.urlretrieve(sample.s3_wav_url, "/tmp/" + sample.name + ".wav")
 
-sample = Sample.objects.get(pk=1)
 
-import urllib
+from django.core.files import File
+from kitbuilder.kitbuilder_v1.models import KitBuilderPurchase
 
-urllib.urlretrieve(sample.s3_wav_url, "/tmp/" + sample.name + ".wav")
+kb_purchase = KitBuilderPurchase.objects.get(pk=9)
+kit_name = "Try Create template 2"
+
+zip_file = kit_name + ".zip"
+
+zip_to_upload = File(open(zip_file, 'rb'))
+print zip_to_upload.name
+print "with statement worked.."
+# filename_to_save = kit_name + ".zip"
+kb_purchase.zip_file.save(zip_file, zip_to_upload, True)
+print "zip_file.save worked.."
+kb_purchase.save()
+print "Purchase Created! with zip attached!"

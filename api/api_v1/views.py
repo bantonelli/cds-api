@@ -162,7 +162,7 @@ class KitBuilderPaymentView(View):
         else:
         # build kit zip file --> DONE
         # create kitbuilder_purchase object and associate with User --> DONE
-            # Upload the kitbuilder_purchase to S3 and create download link for it.
+            # NEW --> Upload the kitbuilder_purchase to S3 and create download link for it. DONE
         # email kit to user --> DONE
             payment_success = True
             print payment_success
@@ -219,14 +219,19 @@ class KitBuilderPaymentView(View):
                     # Create Custom Kit object, associate with User Profile and Zip file
                     user_profile = UserProfile.objects.get(pk=user_id)
                     kb_purchase = KitBuilderPurchase(name=kit_name, user=user_profile)
-                    with open(zip_file, 'r') as f:
-                        zip_to_upload = File(f)
-                    kb_purchase.zip_file.save(zip_file, zip_to_upload, True)
                     kb_purchase.save()
                     # Associate samples with custom kit object
                     kb_purchase.samples = sample_objects
                     kb_purchase.save()
                     purchased_kit_id = kb_purchase.id
+                    zip_to_upload = File(open(zip_file, 'rb'))
+                    print zip_to_upload.name
+                    print "with statement worked.."
+                    # filename_to_save = kit_name + ".zip"
+                    kb_purchase.zip_file.save(zip_file, zip_to_upload, True)
+                    print "zip_file.save worked.."
+                    kb_purchase.save()
+                    print "Purchase Created! with zip attached!"
                 except:
                     print "Kb Purchase Not created"
                     # return "Custom Kit Creation Error"
@@ -246,8 +251,9 @@ class KitBuilderPaymentView(View):
                 os.remove(zip_file)
             except:
                 zip_created = False
+                print "Zip File Error"
                 pass
-                # return "Zip File Error"
+
 
         result.append({
             "purchased_kit_id": purchased_kit_id,

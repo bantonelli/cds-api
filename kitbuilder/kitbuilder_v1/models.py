@@ -170,7 +170,7 @@ class Sample(models.Model):
 def upload_kitbuilder_purchase_zip(instance, filename):
     # kit_name = instance.name.replace(" ", "_").replace("'", "")
     user = instance.user
-    return "media/kitbuilder_purchases/user_" + user.id + "/" + filename
+    return "media/kitbuilder_purchases/user_" + str(user.id) + "/" + filename
 
 
 class KitBuilderPurchase(models.Model):
