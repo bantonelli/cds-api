@@ -5,6 +5,7 @@ import urllib2
 import ast
 import json
 import stripe
+import locale
 from django.core.files import File
 from django.http import HttpResponse
 from django.views.generic import View
@@ -239,8 +240,10 @@ class KitBuilderPaymentView(View):
                     # return "Custom Kit Creation Error"
                     pass
                 try:
+                    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
                     email = user.email
-                    body_text = "Thank you for purchasing a custom kit from BeatParadigm. Log in to your account, and check account settings at any time to download your purchase. Your order number: " + str(order_number) + ". Amount paid: $" + str(charge_amount/100) + ".",
+                    amount_paid = locale.currency(charge_amount * 0.01)
+                    body_text = "Thank you for purchasing a custom kit from BeatParadigm. Log in to your account, and check account settings at any time to download your purchase. Your order number: " + str(order_number) + ". Amount paid: " + amount_paid + "."
                     mail = EmailMessage("Your Recent KitBuilder Purchase", body_text, "sales@beatparadigm.com", [email])
                     # mail.attach_file(zip_file)
                     mail.send()
