@@ -200,7 +200,7 @@ DJOSER = {
     'SITE_NAME': 'Beat Paradigm',
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'ACTIVATION_URL': 'registration/activate/{uid}/{token}',
-    'ACCOUNT_UPDATE_CONFIRM_URL': 'account-settings/update-info/{uid}/{token}',
+    'ACCOUNT_UPDATE_CONFIRM_URL': 'account/update-info/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
 }
 
