@@ -240,8 +240,9 @@ class KitBuilderPaymentView(View):
                     pass
                 try:
                     email = user.email
-                    mail = EmailMessage("Your Recent KitBuilder Purchase", "The zip file attached to this message contains your recent KitBuilder purchase.", "sales@beatparadigm.com", [email])
-                    mail.attach_file(zip_file)
+                    body_text = "Thank you for purchasing a custom kit from BeatParadigm. Log in to your account, and check account settings at any time to download your purchase. Your order number: " + order_number + ". Amount paid: $" + str(charge_amount/100) + ".",
+                    mail = EmailMessage("Your Recent KitBuilder Purchase", body_text, "sales@beatparadigm.com", [email])
+                    # mail.attach_file(zip_file)
                     mail.send()
                     mail_sent = True
                 except:
